@@ -120,7 +120,6 @@ def elder_age(m,n,l,t):
 
 
 
-
 debug = 1
 
 elder_age(5,5,1,100), 5)
@@ -151,4 +150,3 @@ def slow_print(m, n, l):
         if row % 8 == 7:
             print()
     print('== ', sum_all)
-    return

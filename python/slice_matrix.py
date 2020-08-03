@@ -131,6 +131,7 @@ def sum_split_table(r, c, loss, mod):
     row_rest = r % 8
     blocks_col = c // 8
     col_rest = c % 8
+    if debug: print('---\nr', blocks_row, row_rest, 'c', blocks_col, col_rest)
 
     # let's do all 8x8 blocks, if they exist
     if blocks_row and blocks_column:
@@ -140,27 +141,50 @@ def sum_split_table(r, c, loss, mod):
                 # todo check dic
                 part_sum = subtract_loss(a, 8, 8, loss)
                 total_sum += part_sum % mod
+                if debug: print('8x8#', a, row, col, part_sum, total_sum)
 
-    # the right bottom block, 7x7 or less
-    # also if it's only that in the whole matrix, blocks_row and col will be 0
+    # the right bottom block, 7x7 or less, if it exists
+    # also it's matrix of 7x7 or less, blocks_row and col will be 0
     if row_rest and col_rest:
         a = (blocks_row * 8) ^ (blocks_col * 8)
         part_sum = subtract_loss(a, row_rest, col_rest, loss)
         total_sum += part_sum % mod
+        if debug: print('rest#', a, part_sum, total_sum)
 
     # rightmost column except last block, size r-rest_row x rest_col
-    if blocks_row >= 1 and col_rest:
+    # it exists if col_rest > 0
+    if blocks_row and col_rest:
         for row in range(blocks_row):
             a = (row * 8) ^ (blocks_col * 8)
             part_sum = subtract_loss(a, 8, col_rest, loss)
             total_sum += part_sum % mod
+            if debug: print('last col#', a, row, part_sum, total_sum)
 
     # bottom row except last block size rest_row x c-rest_col
-    if blocks_col >= 1 and row-rest:
+    # it exists if row_rest > 0
+    if blocks_col and row_rest:
         for col in range(blocks_col):
             a = (block_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
             total_sum += part_sum % mod
+            if debug: print('last row#', a, col, part_sum, total_sum)
+
+    # matrix is a column of rest_col width, sum all except last block
+    if blocks_row and col_rest and blocks_col == 0
+        for row in range(blocks_row):
+            a = (row * 8) ^ 0
+            part_sum = subtract_loss(a, 8, col_rest, loss)
+            total_sum += part_sum % mod
+            if debug: print('last col#', a, row, part_sum, total_sum)
+
+    # matrix is a row of rest_row height, sum all except last block
+    if blocks_col and row_rest and blocks_row == 0:
+        for col in range(blocks_col):
+            a = (block_row * 8) ^ (col * 8)
+            part_sum = subtract_loss(a, row_rest, 8, loss)
+            total_sum += part_sum % mod
+            if debug: print('last row#', a, col, part_sum, total_sum)
+            
 
 
 def elder_age(m,n,l,t):

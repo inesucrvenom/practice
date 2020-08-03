@@ -94,7 +94,10 @@ def sum_submatrix_loss(c, r, loss):
             sum_l += DELTAS_LOSS[row][col]
     return sum_l
 
-def subtract_loss(a, c, r, loss):
+
+
+
+def subtract_loss(a, c, r, loss, t):
     '''
     return sum of a table (less or equal to 8x8) where loss is subtracted
     '''

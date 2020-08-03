@@ -1,3 +1,6 @@
+import argparse
+
+
 debug = 1
 
 def show_matrix(mat):
@@ -131,7 +134,7 @@ def sum_split_table(c, r, loss, mod):
     row_rest = r % 8
     blocks_col = c // 8
     col_rest = c % 8
-    if debug: print('---\nr', blocks_row, row_rest, 'c', blocks_col, col_rest)
+    if debug: print('sst r', blocks_row, row_rest, 'c', blocks_col, col_rest)
 
     # let's do all 8x8 blocks, if they exist
     if blocks_row and blocks_col:
@@ -141,7 +144,7 @@ def sum_split_table(c, r, loss, mod):
                 # todo check dic
                 part_sum = subtract_loss(a, 8, 8, loss)
                 total_sum += part_sum % mod
-                if debug: print('8x8#', a, row, col, part_sum, total_sum)
+                if debug > 1: print('8x8#', a, row, col, part_sum, total_sum)
 
     # the right bottom block, 7x7 or less, if it exists
     # also it's matrix of 7x7 or less, blocks_row and col will be 0
@@ -175,7 +178,7 @@ def sum_split_table(c, r, loss, mod):
             a = (row * 8) ^ 0
             part_sum = subtract_loss(a, 8, col_rest, loss)
             total_sum += part_sum % mod
-            if debug: print('last col#', a, row, part_sum, total_sum)
+            if debug: print('single col#', a, row, part_sum, total_sum)
 
     # matrix is a row of rest_row height, sum all except last block
     if blocks_col and row_rest and blocks_row == 0:
@@ -183,29 +186,53 @@ def sum_split_table(c, r, loss, mod):
             a = (block_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
             total_sum += part_sum % mod
-            if debug: print('last row#', a, col, part_sum, total_sum)
-            
+            if debug: print('single row#', a, col, part_sum, total_sum)
+
 
 
 def elder_age(m,n,l,t):
     make_loss(l)
     sum_split_table(m, n, l, t)
     if debug:
+        print('---\n',m, n, l, t)
+    if debug == 2:
         show_matrix(DELTAS)
         print(VECTOR)
         show_matrix(DELTAS_LOSS)
         print(VECTOR_LOSS)
+    return sum_split_table(m, n, l, t)
 
 
 
-debug = 1
 
-print(elder_age(5,5,1,100), 5)
-print(elder_age(8,5,1,100), 5)
-print(elder_age(8,8,0,100007), 224)
-#print(elder_age(25,31,0,100007), 11925)
-#print(elder_age(5,45,3,1000007), 4323)
-#print(elder_age(31,39,7,2345), 1586)
-#print(elder_age(545,435,342,1000007), 808451)
+parser = argparse.ArgumentParser()
+parser.add_argument("debug", type=int, help="debug level")
+parser.add_argument("cnt_tests", type=int, help="how many tests to run")
+args = parser.parse_args()
+
+debug = args.debug
+
+if args.cnt_tests >= 1:
+    print(elder_age(5,4,1,1000),30)
+    print(elder_age(5,8,1,1000),105)
+    print(elder_age(8,4,1,1000),84)
+    print(elder_age(16,4,1,1000),420)
+    print(elder_age(5,16,1,1000),525)
+    print(elder_age(16,8,1,10000),840)
+    print(elder_age(8,16,1,10000),840)
+    print(elder_age(25,34,1,10000),3776)
+    print(elder_age(10,4,3,10000),92)
+    print(elder_age(5,10,2,10000),156)
+    print(elder_age(32,17,0,10000),8432)
+
+if args.cnt_tests >= 2:
+    print(elder_age(8,5,1,100), 5)
+    print(elder_age(8,8,0,100007), 224)
+    print(elder_age(25,31,0,100007), 11925)
+    print(elder_age(5,45,3,1000007), 4323)
+    print(elder_age(31,39,7,2345), 1586)
+if args.cnt_tests >= 2:
+    print(elder_age(545,435,342,1000007), 808451)
 #You need to run this test very quickly before attempting the actual tests :)
-#print(elder_age(28827050410, 35165045587, 7109602, 13719506), 5456283);
+if args.cnt_tests >= 4:
+    print(elder_age(28827050410, 35165045587, 7109602, 13719506), 5456283);

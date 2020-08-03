@@ -16,48 +16,21 @@ DELTAS = [
     [5, 4, 7, 6, 1, 0, 3, 2],
     [6, 7, 4, 5, 2, 3, 0, 1],
     [7, 6, 5, 4, 3, 2, 1, 0]]
-VECTOR = 28
-
-# will be modified only once, by function initialise,
-# then used as a constant would be
-DELTAS_LOSS = []
-VECTOR_LOSS = 0
 
 # todo
 # save already computed sums
 prev = {}
-prev_loss = {}
 MODULO = 0
 
 def mod(num):
     global MODULO
     return num % MODULO
 
-def initialise(loss, t):
-    '''
-    modify helper table DELTAS_LOSS from DELTAS and subtracting loss
-    reset VECTOR_LOSS, previous_8x8
-    '''
-    global DELTAS_LOSS
-    DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
-    global VECTOR_LOSS
-    VECTOR_LOSS = 0
-
-    for row in range(8):
-        for col in range(8):
-            check = DELTAS[row][col] - loss
-            DELTAS_LOSS[row][col] = 0 if check < 0 else check
-
-    for row in range(8):
-        VECTOR_LOSS += DELTAS_LOSS[row][0]
-
-    # just to be on the safe side
+def initialise(t):
     prev.clear()
-    prev_loss.clear()
+    MODULO = t
 
-    mo = t
-
-def sum_submatrix(a, c, r, mod):
+def sum_submatrix(a, c, r, loss):
     '''
     returns sum of elements of a submatrix of c columns and r rows
     c, r <= 8
@@ -86,81 +59,26 @@ def sum_submatrix(a, c, r, mod):
     if check != None:
         return check
 
-    # each full row/cols is worth 8a + VECTOR
-    # just see how many times you have them (col/row times)
-    if r == 8:
-        res = (c * (8*a + VECTOR)) % mod
-        prev[(a, c, r)] = res
-        prev[(a, r, c)] = res
-        return res
-    if c == 8:
-        res = (r * (8*a + VECTOR)) % mod
-        prev[(a, c, r)] = res
-        prev[(a, r, c)] = res
-        return res
-
     sum_a = 0
-    for row in range(r):
-        for col in range(c):
-            sum_a += (a + DELTAS[row][col]) % mod
-            sum_a = sum_a % mod
+    if a > loss:
+        item = a - loss
+        for row in range(r):
+            for col in range(c):
+                sum_a += (item + DELTAS[row][col]) % mod
+                sum_a = sum_a % mod
+    else:
+        for row in range(r):
+            for col in range(c):
+                sum_item = a + DELTAS[row][col] - loss
+                sum_a += (sum_item % mod) if sum_item > 0 else 0
+                sum_a = sum_a % mod
 
     prev[(a, c, r)] = sum_a
     prev[(a, r, c)] = sum_a
     return sum_a
 
 
-def sum_submatrix_loss(c, r, mod):
-    '''
-    if we came here, that means only items from DELTAS_LOSS have survived
-    '''
-    global prev_loss
-    if not ((0 < c <= 8) and (0 < r <= 8)):
-        raise ValueError("Row or col values are out of range")
-
-    check = prev_loss.get((c, r))
-    if check != None:
-        return check
-    check = prev_loss.get((r, c))
-    if check != None:
-        return check
-
-    # each full row/cols is worth VECTOR_LOSS
-    # just see how many times you have them (col/row times)
-    if r == 8:
-        res = (c * VECTOR_LOSS) % mod
-        prev_loss[(c, r)] = res
-        prev_loss[(r, c)] = res
-        return res
-
-    if c == 8:
-        res = (r * VECTOR_LOSS) % mod
-        prev_loss[(c, r)] = res
-        prev_loss[(r, c)] = res
-        return res
-
-    sum_l = 0
-    for row in range(r):
-        for col in range(c):
-            sum_l += DELTAS_LOSS[row][col] % mod
-            sum_l = sum_l % mod
-
-    prev_loss[(c, r)] = sum_l
-    prev_loss[(r, c)] = sum_l
-    return sum_l
-
-
-def subtract_loss(a, c, r, loss, mod):
-    '''
-    return sum of a table (less or equal to 8x8) where loss is subtracted
-    '''
-    if loss <= a:
-        result = sum_submatrix(a - loss, c, r, mod)
-    else:
-        result = sum_submatrix_loss(c, r, mod)
-    return result
-
-def sum_split_table(c, r, loss, mod):
+def sum_split_table(c, r, loss):
     '''
     divide table into 8x8 blocks and the rest
     return its sum
@@ -184,7 +102,7 @@ def sum_split_table(c, r, loss, mod):
             for col in range(blocks_col):
                 a = (row * 8) ^ (col * 8)
                 # todo check dic
-                part_sum = subtract_loss(a, 8, 8, loss, mod)
+                part_sum = sum_submatrix(a, 8, 8, loss)
                 total_sum += part_sum % mod
                 # if debug: print('8x8#', a, row, col, part_sum, total_sum)
 
@@ -192,7 +110,7 @@ def sum_split_table(c, r, loss, mod):
     # also it's matrix of 7x7 or less, blocks_row and col will be 0
     if row_rest and col_rest:
         a = (blocks_row * 8) ^ (blocks_col * 8)
-        part_sum = subtract_loss(a, row_rest, col_rest, loss, mod)
+        part_sum = sum_submatrix(a, row_rest, col_rest, loss)
         total_sum += part_sum % mod
         if debug: print('rest#', a, part_sum, total_sum)
 
@@ -201,7 +119,7 @@ def sum_split_table(c, r, loss, mod):
     if blocks_row > 1 and col_rest and blocks_col > 0:
         for row in range(blocks_row):
             a = (row * 8) ^ (blocks_col * 8)
-            part_sum = subtract_loss(a, 8, col_rest, loss, mod)
+            part_sum = sum_submatrix(a, 8, col_rest, loss)
             total_sum += part_sum % mod
             if debug: print('last col#', a, row, part_sum, total_sum)
 
@@ -210,7 +128,7 @@ def sum_split_table(c, r, loss, mod):
     if blocks_col > 1 and row_rest:
         for col in range(blocks_col):
             a = (blocks_row * 8) ^ (col * 8)
-            part_sum = subtract_loss(a, row_rest, 8, loss, mod)
+            part_sum = sum_submatrix(a, row_rest, 8, loss)
             total_sum += part_sum % mod
             if debug: print('last row#', a, col, part_sum, total_sum)
 
@@ -218,7 +136,7 @@ def sum_split_table(c, r, loss, mod):
     if blocks_row and col_rest and blocks_col == 0:
         for row in range(blocks_row):
             a = (row * 8) ^ 0
-            part_sum = subtract_loss(a, 8, col_rest, loss, mod)
+            part_sum = sum_submatrix(a, 8, col_rest, loss)
             total_sum += part_sum % mod
             if debug: print('single col#', a, row, part_sum, total_sum)
 
@@ -226,7 +144,7 @@ def sum_split_table(c, r, loss, mod):
     if blocks_col and row_rest and blocks_row == 0:
         for col in range(blocks_col):
             a = (blocks_row * 8) ^ (col * 8)
-            part_sum = subtract_loss(a, row_rest, 8, loss, mod)
+            part_sum = sum_submatrix(a, row_rest, 8, loss)
             total_sum += part_sum % mod
             if debug: print('single row#', a, col, part_sum, total_sum)
 
@@ -234,7 +152,7 @@ def sum_split_table(c, r, loss, mod):
 
 
 def elder_age(m,n,l,t):
-    initialise(l, t)
+    initialise(t)
     if debug:
         print('---\n',m, n, l, t)
     if debug == 2:
@@ -242,7 +160,7 @@ def elder_age(m,n,l,t):
         print(VECTOR)
         show_matrix(DELTAS_LOSS)
         print(VECTOR_LOSS)
-    return sum_split_table(m, n, l, t)
+    return sum_split_table(m, n, l)
 
 
 
@@ -266,6 +184,8 @@ if args.cnt_tests >= 1:
     print(elder_age(10,4,3,10000),92)
     print(elder_age(5,10,2,10000),156)
     print(elder_age(32,17,0,10000),8432)
+    print(elder_age(25,34,30,10000),726)
+    print(prev)
 
 if args.cnt_tests >= 2:
     print(elder_age(8,5,1,100), 5)

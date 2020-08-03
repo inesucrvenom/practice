@@ -59,17 +59,17 @@ def sum_submatrix(a, c, r):
         #        raise ValueError("Row or col values are out of range")
         print("Row or col values are out of range")
 
-    # each full row/cols is worth 8a + 28
+    # each full row/cols is worth 8a + VECTOR
     # just see how many times you have them (col/row times)
     if r == 8:
-        return c * (8*a + 28)
+        return c * (8*a + VECTOR)
     if c == 8:
-        return r * (8*a + 28)
+        return r * (8*a + VECTOR)
 
     sum_a = 0
     for row in range(r):
         for col in range(c):
-            sum_a += a + deltas[row][col]
+            sum_a += a + DELTAS[row][col]
     return sum_a
 
 

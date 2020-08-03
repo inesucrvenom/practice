@@ -33,11 +33,7 @@ def make_loss(loss):
     for row in range(8):
         for col in range(8):
             check = DELTAS[row][col] - loss
-            if check < 0:
-                DELTAS_LOSS[row][col] = 0
-            else:
-                DELTAS_LOSS[row][col] = check
-    return
+            DELTAS_LOSS[row][col] = 0 if check < 0 else check
 
 
 def sum_submatrix(a, c, r):

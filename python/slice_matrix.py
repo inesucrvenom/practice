@@ -79,7 +79,7 @@ def sum_submatrix(a, c, r):
     return sum_a
 
 
-def sum_submatrix_loss(c, r, loss):
+def sum_submatrix_loss(c, r):
     '''
     if we came here, that means only items from DELTAS_LOSS have survived
     '''
@@ -103,7 +103,7 @@ def sum_submatrix_loss(c, r, loss):
 
 
 
-def subtract_loss(a, c, r, loss, t):
+def subtract_loss(a, c, r, loss):
     '''
     return sum of a table (less or equal to 8x8) where loss is subtracted
     '''
@@ -126,9 +126,9 @@ def sum_split_table(r, c, loss, mod):
     total_sum = 0
 
     blocks_row = r // 8
-    rest_row = r % 8
-    blocks_column = c // 8
-    rest_col = c % 8
+    row_rest = r % 8
+    blocks_col = c // 8
+    col_rest = c % 8
 
     # let's do all 8x8 blocks, if they exist
     if blocks_row and blocks_column:
@@ -147,22 +147,23 @@ def sum_split_table(r, c, loss, mod):
         total_sum += part_sum % mod
 
     # rightmost column except last block, size r-rest_row x rest_col
-    if blocks_row >= 1 and rest_col:
+    if blocks_row >= 1 and col_rest:
         for row in range(blocks_row):
             a = (row * 8) ^ (blocks_col * 8)
             part_sum = subtract_loss(a, 8, col_rest, loss)
             total_sum += part_sum % mod
 
     # bottom row except last block size rest_row x c-rest_col
-    if blocks_col >= 1 and rest_row:
+    if blocks_col >= 1 and row-rest:
         for col in range(blocks_col):
-            a = (block_row * 8) ^ (col * 8)_
+            a = (block_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
             total_sum += part_sum % mod
 
 
 def elder_age(m,n,l,t):
-    split_table(m, n, l, t)
+    make_loss(l)
+    sum_split_table(m, n, l, t)
     if debug:
         show_matrix(DELTAS)
         print(VECTOR)
@@ -176,7 +177,7 @@ debug = 1
 print(elder_age(5,5,1,100), 5)
 print(elder_age(8,5,1,100), 5)
 print(elder_age(8,8,0,100007), 224)
-print(elder_age(25,31,0,100007), 11925)
+#print(elder_age(25,31,0,100007), 11925)
 #print(elder_age(5,45,3,1000007), 4323)
 #print(elder_age(31,39,7,2345), 1586)
 #print(elder_age(545,435,342,1000007), 808451)

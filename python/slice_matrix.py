@@ -113,8 +113,52 @@ def subtract_loss(a, c, r, loss, t):
         result = sum_submatrix_loss(c, r)
     return result
 
-def split_table(r, c, loss, mod):
-    pass
+def sum_split_table(r, c, loss, mod):
+    '''
+    divide table into 8x8 blocks and the rest
+    return its sum
+
+    8x8         8x8         rest_colx8
+    8x8         8x8         rest_colx8
+    ...
+    rest_rowx8  rest_rowx8  rest_row x rest_col
+    '''
+    total_sum = 0
+
+    blocks_row = r // 8
+    rest_row = r % 8
+    blocks_column = c // 8
+    rest_col = c % 8
+
+    # let's do all 8x8 blocks, if they exist
+    if blocks_row and blocks_column:
+        for row in range(blocks_row):
+            for col in range(blocks_col):
+                a = (row * 8) ^ (col * 8)
+                # todo check dic
+                part_sum = subtract_loss(a, 8, 8, loss)
+                total_sum += part_sum % mod
+
+    # the right bottom block, 7x7 or less
+    # also if it's only that in the whole matrix, blocks_row and col will be 0
+    if row_rest and col_rest:
+        a = (blocks_row * 8) ^ (blocks_col * 8)
+        part_sum = subtract_loss(a, row_rest, col_rest, loss)
+        total_sum += part_sum % mod
+
+    # rightmost column except last block, size r-rest_row x rest_col
+    if blocks_row >= 1 and rest_col:
+        for row in range(blocks_row):
+            a = (row * 8) ^ (blocks_col * 8)
+            part_sum = subtract_loss(a, 8, col_rest, loss)
+            total_sum += part_sum % mod
+
+    # bottom row except last block size rest_row x c-rest_col
+    if blocks_col >= 1 and rest_row:
+        for col in range(blocks_col):
+            a = (block_row * 8) ^ (col * 8)_
+            part_sum = subtract_loss(a, row_rest, 8, loss)
+            total_sum += part_sum % mod
 
 
 def elder_age(m,n,l,t):

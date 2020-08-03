@@ -31,8 +31,6 @@ def make_loss(loss):
     modify helper table DELTAS_LOSS from DELTAS and subtracting loss
     modify helper VECTOR_LOSS
     '''
-    global DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
-    global VECTOR_LOSS = 0
     global DELTAS_LOSS
     DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
     global VECTOR_LOSS

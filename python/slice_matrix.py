@@ -1,7 +1,6 @@
 import argparse
 
-
-debug = 1
+debug = 0
 
 def show_matrix(mat):
     result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
@@ -19,7 +18,7 @@ DELTAS = [
     [7, 6, 5, 4, 3, 2, 1, 0]]
 VECTOR = 28
 
-# will be modified only once, by function make_loss,
+# will be modified only once, by function initialise,
 # then used as a constant would be
 DELTAS_LOSS = []
 VECTOR_LOSS = 0
@@ -28,11 +27,10 @@ VECTOR_LOSS = 0
 # save already computed sums
 previous_8x8 = {}
 
-
-def make_loss(loss):
+def initialise(loss):
     '''
     modify helper table DELTAS_LOSS from DELTAS and subtracting loss
-    modify helper VECTOR_LOSS
+    reset VECTOR_LOSS, previous_8x8
     '''
     global DELTAS_LOSS
     DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
@@ -67,8 +65,13 @@ def sum_submatrix(a, c, r):
     '''
 
     if not ((0 < c <= 8) and (0 < r <= 8)):
-        #        raise ValueError("Row or col values are out of range")
-        print("Row or col values are out of range")
+        raise ValueError("Row or col values are out of range")
+
+    # if we've already calculated it, then just retrieve and return
+
+    check = previous_8x8.get(a)
+    if check != None:
+        return check
 
     # each full row/cols is worth 8a + VECTOR
     # just see how many times you have them (col/row times)
@@ -81,6 +84,8 @@ def sum_submatrix(a, c, r):
     for row in range(r):
         for col in range(c):
             sum_a += a + DELTAS[row][col]
+
+    previous_8x8[a] = sum_a
     return sum_a
 
 
@@ -89,8 +94,7 @@ def sum_submatrix_loss(c, r):
     if we came here, that means only items from DELTAS_LOSS have survived
     '''
     if not ((0 < c <= 8) and (0 < r <= 8)):
-        #        raise ValueError("Row or col values are out of range")
-        print("Row or col values are out of range")
+        raise ValueError("Row or col values are out of range")
 
     # each full row/cols is worth VECTOR_LOSS
     # just see how many times you have them (col/row times)
@@ -104,8 +108,6 @@ def sum_submatrix_loss(c, r):
         for col in range(c):
             sum_l += DELTAS_LOSS[row][col]
     return sum_l
-
-
 
 
 def subtract_loss(a, c, r, loss):
@@ -144,7 +146,7 @@ def sum_split_table(c, r, loss, mod):
                 # todo check dic
                 part_sum = subtract_loss(a, 8, 8, loss)
                 total_sum += part_sum % mod
-                if debug > 1: print('8x8#', a, row, col, part_sum, total_sum)
+                if debug: print('8x8#', a, row, col, part_sum, total_sum)
 
     # the right bottom block, 7x7 or less, if it exists
     # also it's matrix of 7x7 or less, blocks_row and col will be 0
@@ -192,7 +194,7 @@ def sum_split_table(c, r, loss, mod):
 
 
 def elder_age(m,n,l,t):
-    make_loss(l)
+    initialise(l)
     if debug:
         print('---\n',m, n, l, t)
     if debug == 2:
@@ -231,7 +233,7 @@ if args.cnt_tests >= 2:
     print(elder_age(25,31,0,100007), 11925)
     print(elder_age(5,45,3,1000007), 4323)
     print(elder_age(31,39,7,2345), 1586)
-if args.cnt_tests >= 2:
+if args.cnt_tests >= 3:
     print(elder_age(545,435,342,1000007), 808451)
 #You need to run this test very quickly before attempting the actual tests :)
 if args.cnt_tests >= 4:

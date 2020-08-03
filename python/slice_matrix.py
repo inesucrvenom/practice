@@ -111,13 +111,13 @@ def
 
 
 def elder_age(m,n,l,t):
+    subtract_loss(m, n, l, t)
     if debug:
         show_matrix(DELTAS)
         print(VECTOR)
         show_matrix(DELTAS_LOSS)
         print(VECTOR_LOSS)
 
-    pass
 
 
 

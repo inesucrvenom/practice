@@ -75,9 +75,24 @@ def sum_submatrix(a, c, r):
 
 def sum_submatrix_loss(c, r, loss):
     '''
-
+    if we came here, that means only items from DELTAS_LOSS have survived
     '''
-    pass
+    if not ((0 < c <= 8) and (0 < r <= 8)):
+        #        raise ValueError("Row or col values are out of range")
+        print("Row or col values are out of range")
+
+    # each full row/cols is worth VECTOR_LOSS
+    # just see how many times you have them (col/row times)
+    if r == 8:
+        return c * VECTOR_LOSS
+    if c == 8:
+        return r * VECTOR_LOSS
+
+    sum_l = 0
+    for row in range(r):
+        for col in range(c):
+            sum_l += DELTAS_LOSS[row][col]
+    return sum_l
 
 def subtract_loss(a, c, r, loss):
     '''

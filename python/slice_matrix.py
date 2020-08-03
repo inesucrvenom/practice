@@ -41,6 +41,8 @@ def make_loss(loss):
             check = DELTAS[row][col] - loss
             DELTAS_LOSS[row][col] = 0 if check < 0 else check
 
+    for row in range(8):
+    VECTOR_LOSS += DELTAS_LOSS[row][0]
 
 def sum_submatrix(a, c, r):
     '''

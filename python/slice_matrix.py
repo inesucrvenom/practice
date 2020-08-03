@@ -167,7 +167,7 @@ def sum_split_table(c, r, loss, mod):
     # it exists if row_rest > 0
     if blocks_col and row_rest:
         for col in range(blocks_col):
-            a = (block_row * 8) ^ (col * 8)
+            a = (blocks_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
             total_sum += part_sum % mod
             if debug: print('last row#', a, col, part_sum, total_sum)
@@ -183,7 +183,7 @@ def sum_split_table(c, r, loss, mod):
     # matrix is a row of rest_row height, sum all except last block
     if blocks_col and row_rest and blocks_row == 0:
         for col in range(blocks_col):
-            a = (block_row * 8) ^ (col * 8)
+            a = (blocks_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
             total_sum += part_sum % mod
             if debug: print('single row#', a, col, part_sum, total_sum)

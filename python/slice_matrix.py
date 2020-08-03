@@ -209,22 +209,3 @@ print(elder_age(8,8,0,100007), 224)
 #print(elder_age(545,435,342,1000007), 808451)
 #You need to run this test very quickly before attempting the actual tests :)
 #print(elder_age(28827050410, 35165045587, 7109602, 13719506), 5456283);
-
-def slow_print(m, n, l):
-    sum_all = 0
-    for row in range(n):
-        line = ''
-        sum_line = 0
-        for col in range(m):
-            item = row ^ col
-            item = item - l if item >= l else 0
-            line += '{:>3}'.format(item)
-            sum_line += item
-            if col % 8 == 7:
-                line += '  '
-        line += ' = {}'.format(sum_line)
-        print(line)
-        sum_all += sum_line
-        if row % 8 == 7:
-            print()
-    print('== ', sum_all)

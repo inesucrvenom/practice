@@ -134,7 +134,7 @@ def sum_split_table(c, r, loss, mod):
     if debug: print('---\nr', blocks_row, row_rest, 'c', blocks_col, col_rest)
 
     # let's do all 8x8 blocks, if they exist
-    if blocks_row and blocks_column:
+    if blocks_row and blocks_col:
         for row in range(blocks_row):
             for col in range(blocks_col):
                 a = (row * 8) ^ (col * 8)

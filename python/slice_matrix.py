@@ -115,7 +115,7 @@ def subtract_loss(a, c, r, loss):
         result = sum_submatrix_loss(c, r)
     return result
 
-def sum_split_table(r, c, loss, mod):
+def sum_split_table(c, r, loss, mod):
     '''
     divide table into 8x8 blocks and the rest
     return its sum

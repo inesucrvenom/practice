@@ -115,11 +115,12 @@ def subtract_loss(a, c, r, loss, t):
         result = sum_submatrix_loss(c, r)
     return result
 
-def
+def split_table(r, c, loss, mod):
+    pass
 
 
 def elder_age(m,n,l,t):
-    subtract_loss(m, n, l, t)
+    split_table(m, n, l, t)
     if debug:
         show_matrix(DELTAS)
         print(VECTOR)

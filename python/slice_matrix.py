@@ -156,7 +156,7 @@ def sum_split_table(c, r, loss, mod):
 
     # rightmost column except last block, size r-rest_row x rest_col
     # it exists if col_rest > 0
-    if blocks_row and col_rest:
+    if blocks_row > 1 and col_rest and blocks_col > 0:
         for row in range(blocks_row):
             a = (row * 8) ^ (blocks_col * 8)
             part_sum = subtract_loss(a, 8, col_rest, loss)
@@ -165,7 +165,7 @@ def sum_split_table(c, r, loss, mod):
 
     # bottom row except last block size rest_row x c-rest_col
     # it exists if row_rest > 0
-    if blocks_col and row_rest:
+    if blocks_col > 1 and row_rest:
         for col in range(blocks_col):
             a = (blocks_row * 8) ^ (col * 8)
             part_sum = subtract_loss(a, row_rest, 8, loss)
@@ -173,7 +173,7 @@ def sum_split_table(c, r, loss, mod):
             if debug: print('last row#', a, col, part_sum, total_sum)
 
     # matrix is a column of rest_col width, sum all except last block
-    if blocks_row and col_rest and blocks_col == 0
+    if blocks_row and col_rest and blocks_col == 0:
         for row in range(blocks_row):
             a = (row * 8) ^ 0
             part_sum = subtract_loss(a, 8, col_rest, loss)
@@ -188,11 +188,11 @@ def sum_split_table(c, r, loss, mod):
             total_sum += part_sum % mod
             if debug: print('single row#', a, col, part_sum, total_sum)
 
+    return total_sum % mod
 
 
 def elder_age(m,n,l,t):
     make_loss(l)
-    sum_split_table(m, n, l, t)
     if debug:
         print('---\n',m, n, l, t)
     if debug == 2:

@@ -21,6 +21,10 @@ VECTOR = 28
 DELTAS_LOSS = []
 VECTOR_LOSS = 0
 
+# todo
+# save already computed sums
+previous_8x8 = {}
+
 
 def make_loss(loss):
     '''

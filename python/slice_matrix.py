@@ -33,6 +33,10 @@ def make_loss(loss):
     '''
     global DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
     global VECTOR_LOSS = 0
+    global DELTAS_LOSS
+    DELTAS_LOSS = [[0 for col in range(8)] for row in range(8)]
+    global VECTOR_LOSS
+    VECTOR_LOSS = 0
 
     for row in range(8):
         for col in range(8):

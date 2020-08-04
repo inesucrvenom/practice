@@ -86,11 +86,11 @@ tests = [
     (1600, 5, 3, 1500, 100),
     (80, 8, 8, 78, 100),
 ]
-# 
+#
 # if __name__ == '__main__':
 #     for test in tests:
 #         (a, c, r, loss, mod) = test
 #         a_print_8x8(a, c, r, loss, mod)
 
 if __name__ == '__main__':
-    slow_print(25, 34, 1, 15000)
+    slow_print(16, 4, 1, 1000)

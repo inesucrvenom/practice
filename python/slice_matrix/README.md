@@ -1,0 +1,3 @@
+- started around 1 Aug
+- lost all code on 3 Aug because I didn't use proven methods (offline and git)
+- at 4 Aug it's correctly working, but too slow for those extreme test cases, need to look up gen rec now

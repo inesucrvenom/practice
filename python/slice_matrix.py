@@ -22,13 +22,15 @@ DELTAS = [
 prev = {}
 MODULO = 0
 
+def initialise(t):
+    global MODULO
+    prev.clear()
+    MODULO = t
+
+
 def mod(num):
     global MODULO
     return num % MODULO
-
-def initialise(t):
-    prev.clear()
-    MODULO = t
 
 def sum_submatrix(a, c, r, loss):
     '''
@@ -61,17 +63,17 @@ def sum_submatrix(a, c, r, loss):
 
     sum_a = 0
     if a > loss:
-        item = a - loss
+        item = mod(mod(a) - mod(loss))
         for row in range(r):
             for col in range(c):
-                sum_a += (item + DELTAS[row][col]) % mod
-                sum_a = sum_a % mod
+                sum_a += mod(item + DELTAS[row][col])
+                sum_a = mod(sum_a)
     else:
         for row in range(r):
             for col in range(c):
-                sum_item = a + DELTAS[row][col] - loss
-                sum_a += (sum_item % mod) if sum_item > 0 else 0
-                sum_a = sum_a % mod
+                sum_item = mod(mod(a) + DELTAS[row][col] - mod(loss))
+                sum_a += mod(sum_item) if sum_item > 0 else 0
+                sum_a = mod(sum_a)
 
     prev[(a, c, r)] = sum_a
     prev[(a, r, c)] = sum_a
@@ -103,7 +105,8 @@ def sum_split_table(c, r, loss):
                 a = (row * 8) ^ (col * 8)
                 # todo check dic
                 part_sum = sum_submatrix(a, 8, 8, loss)
-                total_sum += part_sum % mod
+                total_sum += mod(part_sum)
+                total_sum = mod(total_sum)
                 # if debug: print('8x8#', a, row, col, part_sum, total_sum)
 
     # the right bottom block, 7x7 or less, if it exists
@@ -111,7 +114,8 @@ def sum_split_table(c, r, loss):
     if row_rest and col_rest:
         a = (blocks_row * 8) ^ (blocks_col * 8)
         part_sum = sum_submatrix(a, row_rest, col_rest, loss)
-        total_sum += part_sum % mod
+        total_sum += mod(part_sum)
+        total_sum = mod(total_sum)
         if debug: print('rest#', a, part_sum, total_sum)
 
     # rightmost column except last block, size r-rest_row x rest_col
@@ -120,7 +124,8 @@ def sum_split_table(c, r, loss):
         for row in range(blocks_row):
             a = (row * 8) ^ (blocks_col * 8)
             part_sum = sum_submatrix(a, 8, col_rest, loss)
-            total_sum += part_sum % mod
+            total_sum += mod(part_sum)
+            total_sum = mod(total_sum)
             if debug: print('last col#', a, row, part_sum, total_sum)
 
     # bottom row except last block size rest_row x c-rest_col
@@ -129,7 +134,8 @@ def sum_split_table(c, r, loss):
         for col in range(blocks_col):
             a = (blocks_row * 8) ^ (col * 8)
             part_sum = sum_submatrix(a, row_rest, 8, loss)
-            total_sum += part_sum % mod
+            total_sum += mod(part_sum)
+            total_sum = mod(total_sum)
             if debug: print('last row#', a, col, part_sum, total_sum)
 
     # matrix is a column of rest_col width, sum all except last block
@@ -137,7 +143,8 @@ def sum_split_table(c, r, loss):
         for row in range(blocks_row):
             a = (row * 8) ^ 0
             part_sum = sum_submatrix(a, 8, col_rest, loss)
-            total_sum += part_sum % mod
+            total_sum += mod(part_sum)
+            total_sum = mod(total_sum)
             if debug: print('single col#', a, row, part_sum, total_sum)
 
     # matrix is a row of rest_row height, sum all except last block
@@ -145,10 +152,11 @@ def sum_split_table(c, r, loss):
         for col in range(blocks_col):
             a = (blocks_row * 8) ^ (col * 8)
             part_sum = sum_submatrix(a, row_rest, 8, loss)
-            total_sum += part_sum % mod
+            total_sum += mod(part_sum)
+            total_sum = mod(total_sum)
             if debug: print('single row#', a, col, part_sum, total_sum)
 
-    return total_sum % mod
+    return mod(total_sum)
 
 
 def elder_age(m,n,l,t):
@@ -173,6 +181,10 @@ args = parser.parse_args()
 debug = args.debug
 
 if args.cnt_tests >= 1:
+    print(elder_age(25,34,1,15),6)
+    print(prev)
+
+if args.cnt_tests >= 2:
     print(elder_age(5,4,1,1000),30)
     print(elder_age(5,8,1,1000),105)
     print(elder_age(8,4,1,1000),84)
@@ -185,15 +197,12 @@ if args.cnt_tests >= 1:
     print(elder_age(5,10,2,10000),156)
     print(elder_age(32,17,0,10000),8432)
     print(elder_age(25,34,30,10000),726)
-    print(prev)
-
-if args.cnt_tests >= 2:
+if args.cnt_tests >= 3:
     print(elder_age(8,5,1,100), 5)
     print(elder_age(8,8,0,100007), 224)
     print(elder_age(25,31,0,100007), 11925)
     print(elder_age(5,45,3,1000007), 4323)
     print(elder_age(31,39,7,2345), 1586)
-if args.cnt_tests >= 3:
     print(elder_age(545,435,342,1000007), 808451)
 #You need to run this test very quickly before attempting the actual tests :)
 if args.cnt_tests >= 4:

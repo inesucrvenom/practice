@@ -1,12 +1,5 @@
 debug = 0
 
-
-def show_matrix(mat):
-    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
-                        for row in mat])
-    print(result, '\n')
-
-
 DELTAS = [
     [0, 1, 2, 3, 4, 5, 6, 7],
     [1, 0, 3, 2, 5, 4, 7, 6],

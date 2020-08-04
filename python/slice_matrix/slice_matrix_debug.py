@@ -2,6 +2,13 @@ import argparse
 
 debug = 1
 
+def show_matrix(mat):
+    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
+                        for row in mat])
+    print(result, '\n')
+
+
+
 # dummy version, for testing purposes
 def slow_print(m, n, l, t):
     sum_all = 0

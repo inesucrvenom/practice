@@ -12,7 +12,7 @@ from slice_matrix import initialise, sum_submatrix, sum_split_table
     (0, 8, 5, 0, 40),
     (0, 8, 8, 0, 24),
 ])
-def test_less_than_8x8(modulo, a, c, r, loss, expected):
+def test_blocks(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
     assert sum_submatrix(a, c, r) == expected
 
@@ -21,10 +21,24 @@ def test_less_than_8x8(modulo, a, c, r, loss, expected):
     "a, c, r, loss, expected", [
     pytest.param(0, 10, 10, 0, 94, marks=pytest.mark.xfail), # bigger than 8x8
 ])
-def test_less_than_8x8_expected_fails(modulo, a, c, r, loss, expected):
+def test_blocks_expected_fails(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
     assert sum_submatrix(a, c, r) == expected
 
+
+@pytest.mark.parametrize("modulo",[10])
+@pytest.mark.parametrize(
+    "a, c, r, loss, expected", [
+    (0, 1, 1, 0, 0),
+    (0, 2, 2, 0, 2),
+    (0, 2, 3, 0, 7),
+    (0, 5, 8, 0, 0),
+    (0, 8, 5, 0, 0),
+    (0, 8, 8, 0, 4),
+])
+def test_blocks_diff_mod(modulo, a, c, r, loss, expected):
+    initialise(loss, modulo)
+    assert sum_submatrix(a, c, r) == expected
 
 
 

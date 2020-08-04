@@ -128,21 +128,13 @@ def sum_split_table(c, r):
 
     # rightmost column except last block, size r-rest_row x rest_col
     # it exists if col_rest > 0
-    if blocks_row > 1 and col_rest and blocks_col > 0:
+    if blocks_row and col_rest:
         total_sum += last_column_blocks(blocks_col, blocks_row, col_rest)
 
     # bottom row except last block size rest_row x c-rest_col
     # it exists if row_rest > 0
-    if blocks_col > 1 and row_rest:
+    if blocks_col and row_rest:
         total_sum += last_row_blocks(blocks_col, blocks_row, row_rest)
-
-    # matrix is a column of rest_col width, sum all except last block
-    if blocks_row and col_rest and blocks_col == 0:
-        total_sum += single_column_matrix_blocks(blocks_row, col_rest)
-
-    # matrix is a row of rest_row height, sum all except last block
-    if blocks_col and row_rest and blocks_row == 0:
-        total_sum += single_row_matrix_blocks(blocks_col, blocks_row, row_rest)
 
     return mod(total_sum)
 
@@ -186,31 +178,10 @@ def last_row_blocks(blocks_col, blocks_row, row_rest):
     return return_sum
 
 
-def single_column_matrix_blocks(blocks_row, col_rest):
-    return_sum = 0
-    for row in range(blocks_row):
-        a = (row * 8) ^ 0
-        part_sum = sum_submatrix(a, 8, col_rest)
-        return_sum += mod(part_sum)
-        return_sum = mod(return_sum)
-    return return_sum
-
-
-def single_row_matrix_blocks(blocks_col, blocks_row, row_rest):
-    return_sum = 0
-    for col in range(blocks_col):
-        a = (blocks_row * 8) ^ (col * 8)
-        part_sum = sum_submatrix(a, row_rest, 8)
-        return_sum += mod(part_sum)
-        return_sum = mod(return_sum)
-    return return_sum
-
-
 def elder_age(m, n, l, t):
     initialise(l, t)
     return sum_split_table(m, n)
 
 
 if __name__ == '__main__':
-    initialise(0, 100)
-    print(sum_submatrix(0, 1, 1, 0))
+    assert elder_age(16, 4, 1, 1000) == 420

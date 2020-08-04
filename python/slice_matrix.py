@@ -165,9 +165,6 @@ def elder_age(m,n,l,t):
         print('---\n',m, n, l, t)
     if debug == 2:
         show_matrix(DELTAS)
-        print(VECTOR)
-        show_matrix(DELTAS_LOSS)
-        print(VECTOR_LOSS)
     return sum_split_table(m, n, l)
 
 

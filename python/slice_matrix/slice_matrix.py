@@ -218,10 +218,6 @@ def single_row_matrix(blocks_col, blocks_row, row_rest):
 
 def elder_age(m, n, l, t):
     initialise(l, t)
-    if debug:
-        print('---\n', m, n, l, t)
-    if debug == 2:
-        show_matrix(DELTAS)
     return sum_split_table(m, n, l)
 
 

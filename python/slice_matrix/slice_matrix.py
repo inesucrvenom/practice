@@ -208,7 +208,7 @@ def single_row_matrix_blocks(blocks_col, blocks_row, row_rest):
 
 def elder_age(m, n, l, t):
     initialise(l, t)
-    return sum_split_table(m, n, l)
+    return sum_split_table(m, n)
 
 
 if __name__ == '__main__':

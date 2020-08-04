@@ -52,7 +52,7 @@ def sum_submatrix(a, c, r):
     if not ((0 < c <= 8) and (0 < r <= 8)):
         raise ValueError("Row or col values are out of range")
 
-    biggest = (a + 7) - LOSS  # bottom right element
+    biggest = (a + 7) - LOSS  # top right element
 
     # we have null-matrix if smallest and highest number are 0
     if biggest <= 0:
@@ -143,7 +143,7 @@ def all_8x8_blocks(blocks_col, blocks_row):
     return_sum = 0
     for row in range(blocks_row):
         for col in range(blocks_col):
-            a = (row * 8) ^ (col * 8)
+            a = mod((row * 8) ^ (col * 8))
             part_sum = sum_submatrix(a, 8, 8)
             return_sum += mod(part_sum)
             return_sum = mod(return_sum)
@@ -152,7 +152,7 @@ def all_8x8_blocks(blocks_col, blocks_row):
 
 def rest_block(blocks_col, blocks_row, col_rest, row_rest):
     return_sum = 0
-    a = (blocks_row * 8) ^ (blocks_col * 8)
+    a = mod((blocks_row * 8) ^ (blocks_col * 8))
     part_sum = sum_submatrix(a, row_rest, col_rest)
     return_sum += mod(part_sum)
     return mod(return_sum)
@@ -161,7 +161,7 @@ def rest_block(blocks_col, blocks_row, col_rest, row_rest):
 def last_column_blocks(blocks_col, blocks_row, col_rest):
     return_sum = 0
     for row in range(blocks_row):
-        a = (row * 8) ^ (blocks_col * 8)
+        a = mod((row * 8) ^ (blocks_col * 8))
         part_sum = sum_submatrix(a, 8, col_rest)
         return_sum += mod(part_sum)
         return_sum = mod(return_sum)
@@ -171,7 +171,7 @@ def last_column_blocks(blocks_col, blocks_row, col_rest):
 def last_row_blocks(blocks_col, blocks_row, row_rest):
     return_sum = 0
     for col in range(blocks_col):
-        a = (blocks_row * 8) ^ (col * 8)
+        a = mod((blocks_row * 8) ^ (col * 8))
         part_sum = sum_submatrix(a, row_rest, 8)
         return_sum += mod(part_sum)
         return_sum = mod(return_sum)

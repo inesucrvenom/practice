@@ -1,3 +1,10 @@
+"""
+version that divides whole table into 8x8 blocks and the rest
+    (rightmost column and the last row)
+saves intermediary results, check for null matrices to return faster, but still,
+it's not fast enough
+"""
+
 DELTAS = [
     [0, 1, 2, 3, 4, 5, 6, 7],
     [1, 0, 3, 2, 5, 4, 7, 6],

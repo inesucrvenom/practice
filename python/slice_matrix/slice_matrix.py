@@ -1,5 +1,3 @@
-debug = 0
-
 DELTAS = [
     [0, 1, 2, 3, 4, 5, 6, 7],
     [1, 0, 3, 2, 5, 4, 7, 6],
@@ -18,7 +16,7 @@ LOSS = 0
 
 
 def initialise(l, t):
-    global MODULO, prev, prev_part
+    global MODULO, prev, prev_part, LOSS
 
     prev = {}
     prev_part = {}
@@ -49,8 +47,8 @@ def sum_submatrix(a, c, r):
     a+6  a+7  a+4  a+5  a+2  a+3  a    a+1
     a+7  a+6  a+5  a+4  a+3  a+2  a+1  a
     """
+    global prev, prev_part
 
-    global prev
     if not ((0 < c <= 8) and (0 < r <= 8)):
         raise ValueError("Row or col values are out of range")
 
@@ -118,7 +116,6 @@ def sum_split_table(c, r):
     row_rest = r % 8
     blocks_col = c // 8
     col_rest = c % 8
-    if debug: print('sst r', blocks_row, row_rest, 'c', blocks_col, col_rest)
 
     # let's do all 8x8 blocks, if they exist
     if blocks_row and blocks_col:

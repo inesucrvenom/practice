@@ -15,7 +15,7 @@ from slice_matrix import initialise
 ])
 def test_less_than_8x8(modulo, a, c, r, loss, expected):
     initialise(modulo)
-    assert ssub(a, c, r, loss) == expected
+    assert ssub(a, c, r) == expected
 
 @pytest.mark.parametrize("modulo",[100])
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ def test_less_than_8x8(modulo, a, c, r, loss, expected):
 ])
 def test_less_than_8x8_fails(modulo, a, c, r, loss, expected):
     initialise(modulo)
-    assert ssub(a, c, r, loss) == expected
+    assert ssub(a, c, r) == expected
 
 
 

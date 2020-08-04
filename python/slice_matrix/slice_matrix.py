@@ -110,7 +110,7 @@ def sum_submatrix(a, c, r):
 
 def sum_split_table(c, r):
     """
-    divide table into 8x8 blocks and the rest
+    divide table into 8x8 blocks, rightmost col, last row,  and the rest
     return its sum
 
     8x8         8x8         rest_colx8

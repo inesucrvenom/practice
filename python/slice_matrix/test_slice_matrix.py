@@ -1,8 +1,7 @@
 import pytest
-from slice_matrix import sum_submatrix as ssub
-from slice_matrix import initialise
+from slice_matrix import initialise, sum_submatrix, sum_split_table
 
-# sum_submatrix(a, c, r, loss):
+
 @pytest.mark.parametrize("modulo",[100])
 @pytest.mark.parametrize(
     "a, c, r, loss, expected", [
@@ -15,16 +14,16 @@ from slice_matrix import initialise
 ])
 def test_less_than_8x8(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
-    assert ssub(a, c, r) == expected
+    assert sum_submatrix(a, c, r) == expected
 
 @pytest.mark.parametrize("modulo",[100])
 @pytest.mark.parametrize(
     "a, c, r, loss, expected", [
     pytest.param(0, 10, 10, 0, 94, marks=pytest.mark.xfail), # bigger than 8x8
 ])
-def test_less_than_8x8_fails(modulo, a, c, r, loss, expected):
+def test_less_than_8x8_expected_fails(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
-    assert ssub(a, c, r) == expected
+    assert sum_submatrix(a, c, r) == expected
 
 
 

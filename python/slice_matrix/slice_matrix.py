@@ -1,5 +1,3 @@
-import argparse
-
 debug = 0
 
 def show_matrix(mat):
@@ -188,41 +186,3 @@ def elder_age(m,n,l,t):
     if debug == 2:
         show_matrix(DELTAS)
     return sum_split_table(m, n, l)
-
-
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument("debug", type=int, help="debug level")
-parser.add_argument("cnt_tests", type=int, help="how many tests to run")
-args = parser.parse_args()
-
-debug = args.debug
-
-if args.cnt_tests >= 1:
-    print(elder_age(25,34,1,15000),6)
-    print(prev)
-
-if args.cnt_tests >= 2:
-    print(elder_age(5,4,1,1000),30)
-    print(elder_age(5,8,1,1000),105)
-    print(elder_age(8,4,1,1000),84)
-    print(elder_age(16,4,1,1000),420)
-    print(elder_age(5,16,1,1000),525)
-    print(elder_age(16,8,1,10000),840)
-    print(elder_age(8,16,1,10000),840)
-    print(elder_age(25,34,1,10000),3776)
-    print(elder_age(10,4,3,10000),92)
-    print(elder_age(5,10,2,10000),156)
-    print(elder_age(32,17,0,10000),8432)
-    print(elder_age(25,34,30,10000),726)
-if args.cnt_tests >= 3:
-    print(elder_age(8,5,1,100), 5)
-    print(elder_age(8,8,0,100007), 224)
-    print(elder_age(25,31,0,100007), 11925)
-    print(elder_age(5,45,3,1000007), 4323)
-    print(elder_age(31,39,7,2345), 1586)
-    print(elder_age(545,435,342,1000007), 808451)
-#You need to run this test very quickly before attempting the actual tests :)
-if args.cnt_tests >= 4:
-    print(elder_age(28827050410, 35165045587, 7109602, 13719506), 5456283);

@@ -22,8 +22,10 @@ prev_part = {} # call by ((min(r,c),max(r,c)), (a+7-loss) % time))
 MODULO = 0
 
 def initialise(t):
-    global MODULO
+    global MODULO, prev, prev_part
+
     prev = {}
+    prev_part = {}
     MODULO = t
 
 

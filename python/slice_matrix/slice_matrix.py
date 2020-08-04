@@ -18,7 +18,7 @@ DELTAS = [
 # todo
 # save already computed sums, defined by largest item in matrix (bottom right in 8x8)
 prev = {} # key: (a + 7 - loss) % time
-prev_part = {} # call by ((min(r,c),max(r,c)), (a+7-loss) % time))
+prev_part = {} # call by ( min(r,c), max(r,c), (a+7-loss) % time ) TUPLE!!!
 MODULO = 0
 
 def initialise(t):
@@ -74,12 +74,12 @@ def sum_submatrix(a, c, r, loss):
 
     if 8 == r == c:
         check = prev.get(biggest_mod) # for 8x8 matrix
-    elif r < c: # call for smaller, it's symetrical
-        check = prev_part.get((r, c), biggest_mod)
+    elif r < c: # call for smaller, it's symmetrical
+        check = prev_part.get((r, c, biggest_mod)) # don't forget it's a tuple!
     else:
-        check = prev_part.get((c, r), biggest_mod)
+        check = prev_part.get((c, r, biggest_mod)) # tuple!
 
-    if check != None:
+    if check is not None:
         return check
 
     # everything else is when we don't already have it
@@ -95,9 +95,9 @@ def sum_submatrix(a, c, r, loss):
     if 8 == r == c:
         prev[biggest_mod] = sum_a
     elif r < c:
-        prev_part[(r,c,), biggest_mod]
+        prev_part[(r,c, biggest_mod)] = sum_a
     else:
-        prev_part[(c,r,), biggest_mod]
+        prev_part[(c,r, biggest_mod)] = sum_a
 
     return sum_a
 
@@ -188,3 +188,8 @@ def elder_age(m,n,l,t):
     if debug == 2:
         show_matrix(DELTAS)
     return sum_split_table(m, n, l)
+
+
+if __name__ == '__main__':
+    initialise(100)
+    print(sum_submatrix(0, 1, 1, 0))

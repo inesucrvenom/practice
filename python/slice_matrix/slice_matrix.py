@@ -17,7 +17,7 @@ DELTAS = [
     [6, 7, 4, 5, 2, 3, 0, 1],
     [7, 6, 5, 4, 3, 2, 1, 0]]
 
-# save already computed sums, defined by largest item in matrix (bottom right in 8x8)
+# save already computed sums, defined by largest item in matrix
 prev = {}  # key: (a + 7 - LOSS) % time
 prev_part = {}  # call by ( min(r,c), max(r,c), (a+7-LOSS) % time ) TUPLE!!!
 MODULO = 0
@@ -81,9 +81,9 @@ def sum_submatrix(a, c, r):
     if 8 == r == c:
         check = prev.get(biggest_mod)  # for 8x8 matrix
     elif r < c:  # call for smaller, it's symmetrical
-        check = prev_part.get((r, c, biggest_mod))  # don't forget it's a tuple!
+        check = prev_part.get((r, c, biggest_mod))  # it's a tuple!
     else:
-        check = prev_part.get((c, r, biggest_mod))  # tuple!
+        check = prev_part.get((c, r, biggest_mod))  # it's tuple!
 
     if check is not None:
         return check
@@ -139,20 +139,20 @@ def sum_split_table(c, r):
     # rightmost column except last block, size r-rest_row x rest_col
     # it exists if col_rest > 0
     if blocks_row > 1 and col_rest and blocks_col > 0:
-        total_sum += rightmost_column(blocks_col, blocks_row, col_rest)
+        total_sum += last_column_blocks(blocks_col, blocks_row, col_rest)
 
     # bottom row except last block size rest_row x c-rest_col
     # it exists if row_rest > 0
     if blocks_col > 1 and row_rest:
-        total_sum += last_row(blocks_col, blocks_row, row_rest)
+        total_sum += last_row_blocks(blocks_col, blocks_row, row_rest)
 
     # matrix is a column of rest_col width, sum all except last block
     if blocks_row and col_rest and blocks_col == 0:
-        total_sum += single_column_matrix(blocks_row, col_rest)
+        total_sum += single_column_matrix_blocks(blocks_row, col_rest)
 
     # matrix is a row of rest_row height, sum all except last block
     if blocks_col and row_rest and blocks_row == 0:
-        total_sum += single_row_matrix(blocks_col, blocks_row, row_rest)
+        total_sum += single_row_matrix_blocks(blocks_col, blocks_row, row_rest)
 
     return mod(total_sum)
 
@@ -176,7 +176,7 @@ def rest_block(blocks_col, blocks_row, col_rest, row_rest):
     return mod(return_sum)
 
 
-def rightmost_column(blocks_col, blocks_row, col_rest):
+def last_column_blocks(blocks_col, blocks_row, col_rest):
     return_sum = 0
     for row in range(blocks_row):
         a = (row * 8) ^ (blocks_col * 8)
@@ -186,7 +186,7 @@ def rightmost_column(blocks_col, blocks_row, col_rest):
     return mod(return_sum)
 
 
-def last_row(blocks_col, blocks_row, row_rest):
+def last_row_blocks(blocks_col, blocks_row, row_rest):
     return_sum = 0
     for col in range(blocks_col):
         a = (blocks_row * 8) ^ (col * 8)
@@ -196,7 +196,7 @@ def last_row(blocks_col, blocks_row, row_rest):
     return return_sum
 
 
-def single_column_matrix(blocks_row, col_rest):
+def single_column_matrix_blocks(blocks_row, col_rest):
     return_sum = 0
     for row in range(blocks_row):
         a = (row * 8) ^ 0
@@ -206,7 +206,7 @@ def single_column_matrix(blocks_row, col_rest):
     return return_sum
 
 
-def single_row_matrix(blocks_col, blocks_row, row_rest):
+def single_row_matrix_blocks(blocks_col, blocks_row, row_rest):
     return_sum = 0
     for col in range(blocks_col):
         a = (blocks_row * 8) ^ (col * 8)

@@ -55,29 +55,50 @@ def sum_submatrix(a, c, r, loss):
     if not ((0 < c <= 8) and (0 < r <= 8)):
         raise ValueError("Row or col values are out of range")
 
-    check = prev.get((a, c, r))
-    if check != None:
-        return check
-    check = prev.get((a, r, c))
-    if check != None:
-        return check
+    biggest = (a+7) - loss # bottom right element
 
-    sum_a = 0
-    if a > loss:
-        item = mod(mod(a) - mod(loss))
-        for row in range(r):
-            for col in range(c):
-                sum_a += mod(item + DELTAS[row][col])
-                sum_a = mod(sum_a)
+    # we have null-matrix if smallest and highest number are 0
+    if biggest <= 0:
+        return 0
+
+    # matrix with only 1s on reverse diagonal
+    if biggest == 1:
+        # top part, all 0
+        if (r < 8-c) or (c < 8-r):
+            return 0
+        else:
+            return min(r,c) # has only min(r,c) 1s
+
+    # biggest > 1
+    biggest_mod = mod(biggest)
+
+    if 8 == r == c:
+        check = prev.get(biggest_mod) # for 8x8 matrix
+    elif r < c: # call for smaller, it's symetrical
+        check = prev_part.get((r, c), biggest_mod)
     else:
-        for row in range(r):
-            for col in range(c):
-                sum_item = mod(mod(a) + DELTAS[row][col] - mod(loss))
-                sum_a += mod(sum_item) if sum_item > 0 else 0
-                sum_a = mod(sum_a)
+        check = prev_part.get((c, r), biggest_mod)
 
-    prev[(a, c, r)] = sum_a
-    prev[(a, r, c)] = sum_a
+    if check != None:
+        return check
+
+    # everything else is when we don't already have it
+    sum_a = 0
+    for row in range(r):
+        for col in range(c):
+            # not mod here in case of negatives!
+            sum_item = a + DELTAS[row][col] - loss
+            sum_item = 0 if sum_item <= 0 else mod(sum_item)
+            sum_a += sum_item
+            sum_a = mod(sum_a)
+
+    if 8 == r == c:
+        prev[biggest_mod] = sum_a
+    elif r < c:
+        prev_part[(r,c,), biggest_mod]
+    else:
+        prev_part[(c,r,), biggest_mod]
+
     return sum_a
 
 

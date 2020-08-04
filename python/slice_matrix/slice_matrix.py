@@ -17,19 +17,20 @@ DELTAS = [
     [6, 7, 4, 5, 2, 3, 0, 1],
     [7, 6, 5, 4, 3, 2, 1, 0]]
 
-
 # save already computed sums, defined by largest item in matrix (bottom right in 8x8)
-prev = {}  # key: (a + 7 - loss) % time
-prev_part = {}  # call by ( min(r,c), max(r,c), (a+7-loss) % time ) TUPLE!!!
+prev = {}  # key: (a + 7 - LOSS) % time
+prev_part = {}  # call by ( min(r,c), max(r,c), (a+7-LOSS) % time ) TUPLE!!!
 MODULO = 0
+LOSS = 0
 
 
-def initialise(t):
+def initialise(l, t):
     global MODULO, prev, prev_part
 
     prev = {}
     prev_part = {}
     MODULO = t
+    LOSS = l
 
 
 def mod(num):
@@ -37,7 +38,7 @@ def mod(num):
     return num % MODULO
 
 
-def sum_submatrix(a, c, r, loss):
+def sum_submatrix(a, c, r):
     """
     returns sum of elements of a submatrix of c columns and r rows
     c, r <= 8
@@ -60,7 +61,7 @@ def sum_submatrix(a, c, r, loss):
     if not ((0 < c <= 8) and (0 < r <= 8)):
         raise ValueError("Row or col values are out of range")
 
-    biggest = (a + 7) - loss  # bottom right element
+    biggest = (a + 7) - LOSS  # bottom right element
 
     # we have null-matrix if smallest and highest number are 0
     if biggest <= 0:
@@ -92,7 +93,7 @@ def sum_submatrix(a, c, r, loss):
     for row in range(r):
         for col in range(c):
             # not mod here in case of negatives!
-            sum_item = a + DELTAS[row][col] - loss
+            sum_item = a + DELTAS[row][col] - LOSS
             sum_item = 0 if sum_item <= 0 else mod(sum_item)
             sum_a += sum_item
             sum_a = mod(sum_a)
@@ -107,7 +108,7 @@ def sum_submatrix(a, c, r, loss):
     return sum_a
 
 
-def sum_split_table(c, r, loss):
+def sum_split_table(c, r):
     """
     divide table into 8x8 blocks and the rest
     return its sum
@@ -128,90 +129,95 @@ def sum_split_table(c, r, loss):
 
     # let's do all 8x8 blocks, if they exist
     if blocks_row and blocks_col:
-        total_sum = all_8x8_blocks(blocks_col, blocks_row, loss, total_sum)
+        total_sum += all_8x8_blocks(blocks_col, blocks_row)
 
     # the right bottom block, 7x7 or less, if it exists
     # also it's matrix of 7x7 or less, blocks_row and col will be 0
     if row_rest and col_rest:
-        total_sum = rest_block(blocks_col, blocks_row, col_rest, loss, row_rest, total_sum)
+        total_sum += rest_block(blocks_col, blocks_row, col_rest, row_rest)
 
     # rightmost column except last block, size r-rest_row x rest_col
     # it exists if col_rest > 0
     if blocks_row > 1 and col_rest and blocks_col > 0:
-        total_sum = rightmost_column(blocks_col, blocks_row, col_rest, loss, total_sum)
+        total_sum += rightmost_column(blocks_col, blocks_row, col_rest)
 
     # bottom row except last block size rest_row x c-rest_col
     # it exists if row_rest > 0
     if blocks_col > 1 and row_rest:
-        total_sum = last_row(blocks_col, blocks_row, loss, row_rest, total_sum)
+        total_sum += last_row(blocks_col, blocks_row, row_rest)
 
     # matrix is a column of rest_col width, sum all except last block
     if blocks_row and col_rest and blocks_col == 0:
-        total_sum = single_column_matrix(blocks_row, col_rest, loss, total_sum)
+        total_sum += single_column_matrix(blocks_row, col_rest)
 
     # matrix is a row of rest_row height, sum all except last block
     if blocks_col and row_rest and blocks_row == 0:
-        total_sum = single_row_matrix(blocks_col, blocks_row, loss, row_rest, total_sum)
+        total_sum += single_row_matrix(blocks_col, blocks_row, row_rest)
 
     return mod(total_sum)
 
 
-def all_8x8_blocks(blocks_col, blocks_row, loss, total_sum):
+def all_8x8_blocks(blocks_col, blocks_row):
+    return_sum = 0
     for row in range(blocks_row):
         for col in range(blocks_col):
             a = (row * 8) ^ (col * 8)
-            part_sum = sum_submatrix(a, 8, 8, loss)
-            total_sum += mod(part_sum)
-            total_sum = mod(total_sum)
-    return total_sum
+            part_sum = sum_submatrix(a, 8, 8, LOSS)
+            return_sum += mod(part_sum)
+            return_sum = mod(return_sum)
+    return mod(return_sum)
 
 
-def rest_block(blocks_col, blocks_row, col_rest, loss, row_rest, total_sum):
+def rest_block(blocks_col, blocks_row, col_rest, row_rest):
+    return_sum = 0
     a = (blocks_row * 8) ^ (blocks_col * 8)
-    part_sum = sum_submatrix(a, row_rest, col_rest, loss)
-    total_sum += mod(part_sum)
-    total_sum = mod(total_sum)
-    return total_sum
+    part_sum = sum_submatrix(a, row_rest, col_rest, LOSS)
+    return_sum += mod(part_sum)
+    return mod(return_sum)
 
 
-def rightmost_column(blocks_col, blocks_row, col_rest, loss, total_sum):
+def rightmost_column(blocks_col, blocks_row, col_rest):
+    return_sum = 0
     for row in range(blocks_row):
         a = (row * 8) ^ (blocks_col * 8)
-        part_sum = sum_submatrix(a, 8, col_rest, loss)
-        total_sum += mod(part_sum)
-        total_sum = mod(total_sum)
-        return total_sum
+        part_sum = sum_submatrix(a, 8, col_rest, LOSS)
+        return_sum += mod(part_sum)
+        return_sum = mod(return_sum)
+    return mod(return_sum)
 
 
-def last_row(blocks_col, blocks_row, loss, row_rest, total_sum):
+def last_row(blocks_col, blocks_row, row_rest):
+    return_sum = 0
     for col in range(blocks_col):
         a = (blocks_row * 8) ^ (col * 8)
-        part_sum = sum_submatrix(a, row_rest, 8, loss)
-        total_sum += mod(part_sum)
-        total_sum = mod(total_sum)
-    return total_sum
+        part_sum = sum_submatrix(a, row_rest, 8, LOSS)
+        return_sum += mod(part_sum)
+        return_sum = mod(return_sum)
+    return return_sum
 
 
-def single_column_matrix(blocks_row, col_rest, loss, total_sum):
+def single_column_matrix(blocks_row, col_rest):
+    return_sum = 0
     for row in range(blocks_row):
         a = (row * 8) ^ 0
-        part_sum = sum_submatrix(a, 8, col_rest, loss)
-        total_sum += mod(part_sum)
-        total_sum = mod(total_sum)
-    return total_sum
+        part_sum = sum_submatrix(a, 8, col_rest, LOSS)
+        return_sum += mod(part_sum)
+        return_sum = mod(return_sum)
+    return return_sum
 
 
-def single_row_matrix(blocks_col, blocks_row, loss, row_rest, total_sum):
+def single_row_matrix(blocks_col, blocks_row, row_rest):
+    return_sum = 0
     for col in range(blocks_col):
         a = (blocks_row * 8) ^ (col * 8)
-        part_sum = sum_submatrix(a, row_rest, 8, loss)
-        total_sum += mod(part_sum)
-        total_sum = mod(total_sum)
-    return total_sum
+        part_sum = sum_submatrix(a, row_rest, 8, LOSS)
+        return_sum += mod(part_sum)
+        return_sum = mod(return_sum)
+    return return_sum
 
-    
+
 def elder_age(m, n, l, t):
-    initialise(t)
+    initialise(l, t)
     if debug:
         print('---\n', m, n, l, t)
     if debug == 2:
@@ -220,5 +226,5 @@ def elder_age(m, n, l, t):
 
 
 if __name__ == '__main__':
-    initialise(100)
+    initialise(0, 100)
     print(sum_submatrix(0, 1, 1, 0))

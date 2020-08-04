@@ -20,6 +20,7 @@ def test_blocks(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
     assert sum_submatrix(a, c, r) == expected
 
+
 @pytest.mark.parametrize("modulo",[100])
 @pytest.mark.parametrize(
     "a, c, r, loss, expected", [
@@ -28,6 +29,7 @@ def test_blocks(modulo, a, c, r, loss, expected):
 def test_blocks_expected_fails(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
     assert sum_submatrix(a, c, r) == expected
+
 
 # smaller modulo
 @pytest.mark.parametrize("modulo",[10])
@@ -58,6 +60,7 @@ def test_blocks_small_mod(modulo, a, c, r, loss, expected):
 def test_blocks_small_mod_big_loss(modulo, a, c, r, loss, expected):
     initialise(loss, modulo)
     assert sum_submatrix(a, c, r) == expected
+
 
 @pytest.mark.parametrize("modulo",[100])
 @pytest.mark.parametrize(
@@ -96,6 +99,7 @@ elder_age
 def test_elder_my(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected
 
+
 @pytest.mark.parametrize(
     "c, r, loss, modulo, expected", [
     (8, 5, 1, 100, 5),
@@ -108,9 +112,11 @@ def test_elder_my(c, r, loss, modulo, expected):
 def test_elder_his(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected
 
+
+@pytest.mark.timeout(3)  # stop after 3 sec if they need longer
 @pytest.mark.parametrize(
     "c, r, loss, modulo, expected", [
     (28827050410, 35165045587, 7109602, 13719506, 5456283),
     ])
-def test_elder_his_tough(c, r, loss, modulo, expected):
+def test_elder_might_take_long(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected

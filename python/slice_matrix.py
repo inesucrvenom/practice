@@ -18,13 +18,14 @@ DELTAS = [
     [7, 6, 5, 4, 3, 2, 1, 0]]
 
 # todo
-# save already computed sums
-prev = {}
+# save already computed sums, defined by largest item in matrix (bottom right in 8x8)
+prev = {} # key: (a + 7 - loss) % time
+prev_part = {} # call by ((min(r,c),max(r,c)), (a+7-loss) % time))
 MODULO = 0
 
 def initialise(t):
     global MODULO
-    prev.clear()
+    prev = {}
     MODULO = t
 
 
@@ -178,7 +179,7 @@ args = parser.parse_args()
 debug = args.debug
 
 if args.cnt_tests >= 1:
-    print(elder_age(25,34,1,15),6)
+    print(elder_age(25,34,1,15000),6)
     print(prev)
 
 if args.cnt_tests >= 2:

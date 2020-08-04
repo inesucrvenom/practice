@@ -93,7 +93,7 @@ elder_age
     (32, 17, 0, 10000, 8432),
     (25, 34, 30, 10000,726),
     ])
-def test_elder_my(c, r, loss, modulo):
+def test_elder_my(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected
 
 @pytest.mark.parametrize(
@@ -105,12 +105,12 @@ def test_elder_my(c, r, loss, modulo):
     (31, 39, 7, 2345, 1586),
     (545, 435, 342, 1000007, 808451),
     ])
-def test_elder_his(c, r, loss, modulo):
+def test_elder_his(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected
 
 @pytest.mark.parametrize(
     "c, r, loss, modulo, expected", [
     (28827050410, 35165045587, 7109602, 13719506, 5456283),
     ])
-def test_elder_his_tough(c, r, loss, modulo):
+def test_elder_his_tough(c, r, loss, modulo, expected):
     assert elder_age(c, r, loss, modulo) == expected

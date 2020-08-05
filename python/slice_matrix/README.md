@@ -55,14 +55,32 @@ LOSS >= dim/2:
     - so, when right and bottom neighbour of the smallest element are 1
 - when LOSS is >=8 but smaller than dim/2 then we only get 8x8 null blocks on  the main diagonal, and for the rest we have to check LOSS value further
   - big LOSS clears up blocks of 8x8 (and smaller, but since I have working solution for 8x8 blocks, they'll be my stopping point for the recursion which will figure out big blocks in the starting matrix)
+  - ok, LOSS of type LOSS == 8p will always give full null matrices for 8x8 blocks
+  - need to figure out how to get them, skip them better said
+  - LOSS of type 2^s will give null matrices of 2^s x 2^s
 
 - it looks like recursion could be:
-  starting matrix has dimension row x col and LOSS (modulo will be applied on every step anyway)
-  every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D
+  every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is square matrix unless it's smaller than 8x8
   ```
   A B
   C D
   ```
-  if LOSS >= dim/2:
+  (modulo will be applied on every step where possible)
 
-  if any small_dim <=8 stop and use old solutions
+  starting matrix has dimension row x col and LOSS
+  find biggest s so that 2^s <= LOSS - that will give 2^s null submatrices in the main one
+
+  rec_split: split the big one into A of dim 2^s and the rest
+
+  A is zero, skip it
+  call the same rec_split on D with same s
+
+  for B (and C):
+  rec_sum: find biggest k so that dim = 2^k <= smallest dim of B
+   split B into new AA, BB, CC, DD where you use formula on AA and call rec_sum on the rest
+
+   if any A, B, C, or D <=8 stop and use old solutions
+
+- with some simple testing, it might have sense to spare some recursion calls and calculate some bigger blocks than 8x8 directly
+one candidate is 32x32, another is 64x64
+- in any case, for smallest blocks, we want DELTAS_LOSS table and will just sum through the needed part of it

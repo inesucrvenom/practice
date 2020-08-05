@@ -1,5 +1,117 @@
 """
 version that divides whole table into 2^k x 2^k blocks and the rest
-    (rightmost column and the last row)
-saves intermediary results, check for null matrices to return faster
+    (rightmost column, the last row and the rest matrix on bottom right)
+- saves intermediary results
+- check for null matrices to return faster
+
+
+full matrix of 8x8 looks like:
+
+    a    a+1  a+2  a+3  a+4  a+5  a+6  a+7
+    a+1  a    a+3  a+2  a+5  a+4  a+7  a+6
+    a+2  a+3  a    a+1  a+6  a+7  a+4  a+5
+    a+3  a+2  a+1  a    a+7  a+6  a+5  a+4
+    a+4  a+5  a+6  a+7  a    a+1  a+2  a+3
+    a+5  a+4  a+7  a+6  a+1  a    a+3  a+2
+    a+6  a+7  a+4  a+5  a+2  a+3  a    a+1
+    a+7  a+6  a+5  a+4  a+3  a+2  a+1  a
+
+If we have full square matrix of any dim = 2^k, with top left element of a
+then it's sum is:
+sum_full = {all a elements + sum of matrix when a == o }
+         = a * dim * dim + (dim / 2) * dim * (dim-1)
+         = dim * dim * (a + (dim - 1)/2)
+
+
+- it looks like recursion could be:
+  every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is square matrix unless it's smaller than 8x8
+  ```
+  A B
+  C D
+  ```
+  (modulo will be applied on every step where possible)
+
+  starting matrix has dimension row x col and LOSS
+  find biggest s so that 2^s <= LOSS - that will give 2^s null submatrices in the main one
+
+  rec_split: split the big one into A of dim 2^s and the rest
+
+  A is zero, skip it
+  call the same rec_split on D with same s
+
+  for B (and C):
+  rec_sum: find biggest k so that dim = 2^k <= smallest dim of B
+   split B into new AA, BB, CC, DD where you use formula on AA and call rec_sum on the rest
+
+   if any A, B, C, or D <=8 stop and use  solutions for them
+
 """
+
+# globals defined in the initalise function
+global_previous = {}  # (min_dim, max_dim, biggest_element_modulo_LOSS) TUPLE!!!
+DELOSS = []
+MODULO = 0
+LOSS = 0
+
+# constant independent of values given during the execution
+SMALLEST_BLOCK_SIZE = 8  # todo: see if bigger block makes sense, and which
+
+def initialise(l, t):
+    """
+    will initialise
+    - MODULO, LOSS : int, global constants
+    - global_previous : dict, stores intermediary values of matrix sum calculations
+        key: (min_dim, max_dim, biggest_element_modulo_LOSS)
+            where dim are number of rows or columns
+    - DELOSS : table, store offset values from a (top left) in square matrix, - LOSS
+        - will be used to calculate sums for smallest non square block matrices
+        - current size: SMALLEST_BLOCK_SIZE
+    """
+    global MODULO, LOSS, global_previous
+
+    prev = {}
+    MODULO = t
+    LOSS = l
+
+def mod(num):
+    """ simplifies writing of modulo num """
+    global MODULO
+    return num % MODULO
+
+
+def split_by_loss():
+    """
+    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is square matrix unless it's smaller than SMALLEST_BLOCK_SIZE
+    ```
+    A B
+    C D
+    ```
+
+
+    starting matrix has dimension row x col and LOSS
+    find biggest s so that 2^s <= LOSS - that will give 2^s null submatrices in the main one
+
+    rec_split: split the big one into A of dim 2^s and the rest
+
+    A is zero, skip it
+    call the same rec_split on D with same s
+
+    for B and C call split_into_squares
+
+    if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
+
+
+    returns sum_of_elements
+    """
+    pass
+
+def split_into_squares():
+    pass
+
+    """
+    find biggest k so that dim = 2^k <= smallest dim of B
+    split B into new AA, BB, CC, DD where you use formula on AA and call split_into_squares on the rest
+    if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
+
+    returns sum_of_elements
+    """

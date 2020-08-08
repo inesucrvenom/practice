@@ -74,7 +74,7 @@ if do_this == 2 and __name__ == '__main__':
 
 
 if do_this == 4 and __name__ == '__main__':
-    dim = pow(2, 8) # 32
+    dim = pow(2, 5) # 
     formula = (dim / 2) * dim * (dim-1)
     formula = int(formula)
     print("{}x{}={}".format(dim, dim, formula))

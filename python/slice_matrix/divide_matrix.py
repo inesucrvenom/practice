@@ -59,6 +59,7 @@ def get_globals():
 
 # constant independent of values given during the execution
 SMALLEST_BLOCK_SIZE = 8  # todo: see if bigger block makes sense, and which
+# todo: check for 32, 64, 128
 
 def initialise(l, t):
     """
@@ -67,13 +68,14 @@ def initialise(l, t):
     - global_previous : dict, stores intermediary values of matrix sum calculations
         key: (min_dim, max_dim, biggest_element_modulo_LOSS)
             where dim are number of rows or columns
-    - OFFLOSS : table, store offset values from a (top left) in square matrix, - LOSS
+    - OFFLOSS : table, store offset values from a in a square matrix - LOSS
+        - a is top left element
         - will be used to calculate sums for smallest non square block matrices
         - current size: SMALLEST_BLOCK_SIZE
     """
     global MODULO, LOSS, OFFLOSS, global_previous
 
-    prev = {}
+    global_previous = {}
     MODULO = t
     LOSS = l
     OFFLOSS = []
@@ -91,7 +93,6 @@ def mod(num):
     """ simplifies writing of modulo num """
     global MODULO
     return num % MODULO
-
 
 def split_by_loss():
     """

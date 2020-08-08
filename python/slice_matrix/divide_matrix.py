@@ -48,6 +48,15 @@ OFFLOSS = []  # smallest block helper matrix
 MODULO = 0
 LOSS = 0
 
+def get_globals():
+    "function for testing purposes"
+    return {
+        "global_previous": global_previous,
+        "OFFLOSS": OFFLOSS,
+        "MODULO": MODULO,
+        "LOSS": LOSS
+    }
+
 # constant independent of values given during the execution
 SMALLEST_BLOCK_SIZE = 8  # todo: see if bigger block makes sense, and which
 

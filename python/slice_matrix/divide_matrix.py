@@ -1,3 +1,10 @@
+debug = 1
+# pretty print of any matrix
+def pretty_print(mat):
+    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
+                        for row in mat])
+    print(result, '\n')
+
 """
 a^b == a XOR b (bitwise XOR) in the code
 2**k == pow(2,k) (math exponent 2^k could happen in the comments)

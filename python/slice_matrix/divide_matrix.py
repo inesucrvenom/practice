@@ -76,6 +76,16 @@ def initialise(l, t):
     prev = {}
     MODULO = t
     LOSS = l
+    OFFLOSS = []
+
+    for row in range(SMALLEST_BLOCK_SIZE):
+        new_row = []
+        for col in range(SMALLEST_BLOCK_SIZE):
+            tmp = (row ^ col) - LOSS
+            tmp2 = tmp if tmp > 0 else 0
+            item = mod(tmp2)
+            new_row.append(item)
+        OFFLOSS.append(new_row)
 
 def mod(num):
     """ simplifies writing of modulo num """

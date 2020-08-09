@@ -145,3 +145,7 @@ def sum_square(mat, dim):
     # the rest has to be summed directly, we don't know how many 0s are there
     return -1
 
+
+def elder_age(m, n, l, t):
+    initialise(l, t)
+    return sum_split_table(n, m)  # reverse order bc it's easier for me

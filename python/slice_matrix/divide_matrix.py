@@ -135,3 +135,13 @@ def split_into_squares(mat, r, c):
     if r == c == k: return sum_square(mat, dim)
     # else split into kxk, r-kxk, kxc-k, r-kxc-k
     return -1
+
+def sum_square(mat, dim):
+    """ returns sum of matrix of dimension 2**k using formula"""
+    sum_row = 0
+    a = mat[0][0]
+    if a == 0 and mat[0][dim-1] == 0: return 0  # smallest and biggest are 0
+    if mat[0][1] == a + 1: return mod(dim * dim * (a + (dim - 1)/2))
+    # the rest has to be summed directly, we don't know how many 0s are there
+    return -1
+

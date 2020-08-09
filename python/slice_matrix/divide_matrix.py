@@ -93,14 +93,11 @@ def mod(num):
     global MODULO
     return num % MODULO
 
-def split_by_loss():
+def split_by_loss(mat, r, c):
     """
-    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is square matrix unless it's smaller than SMALLEST_BLOCK_SIZE
-    ```
+    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is a guaranteed square matrix unless it's smaller than SMALLEST_BLOCK_SIZE
     A B
     C D
-    ```
-
 
     starting matrix has dimension row x col and LOSS
     find biggest s so that 2**s <= LOSS - that will give 2**s null submatrices in the main one
@@ -117,6 +114,7 @@ def split_by_loss():
 
     returns sum_of_elements
     """
+    if LOSS == 0: return split_into_squares(mat, r, c)
     pass
 
 def split_into_squares():

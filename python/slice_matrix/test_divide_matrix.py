@@ -1,13 +1,15 @@
 import pytest
 from unittest import mock
-from divide_matrix import initialise, get_globals
+from divide_matrix import get_globals, mod
+from divide_matrix import initialise, sum_square
 
-"""check if numeric globals are correctly initialised"""
+"""check if numeric globals and dict are correctly initialised"""
 def test_initialise_globals():
     initialise(4, 22)
     assert get_globals()["LOSS"] == 4
     assert get_globals()["MODULO"] == 22
     assert get_globals()["global_previous"] == {}
+
 
 """check if initialise generates correct OFFLOSS offset matrix of size 8"""
 @mock.patch('divide_matrix.SMALLEST_BLOCK_SIZE', 8)

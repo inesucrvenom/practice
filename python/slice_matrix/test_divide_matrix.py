@@ -52,3 +52,17 @@ def test_initialise_8x8_with_loss_and_mod():
     [4, 0, 2, 3, 0, 1, 0, 0],
     [0, 4, 3, 2, 1, 0, 0, 0]
     ]
+
+
+def helper_generate_matrix(a, r, c, loss, mod):
+    mat = []
+    for row in range(r):
+        line = []
+        for col in range(c):
+            item = a + (row ^ col) - loss
+            item = item % mod if item > 0 else 0
+            line.append(item)
+        mat.append(line)
+    return mat
+
+

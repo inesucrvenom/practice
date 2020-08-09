@@ -117,13 +117,21 @@ def split_by_loss(mat, r, c):
     if LOSS == 0: return split_into_squares(mat, r, c)
     pass
 
-def split_into_squares():
-    pass
-
+def split_into_squares(mat, r, c):
     """
+    gets matrix, and its dimensions, rows and columns
     find biggest k so that dim = 2**k <= smallest dim of B
     split B into new AA, BB, CC, DD where you use formula on AA and call split_into_squares on the rest
     if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
 
     returns sum_of_elements
     """
+
+    kr = int(log(r, 2))
+    kc = int(log(c, 2))
+    k = min(kr, kc)  # smallest k that 2**k x 2**k fits into r x c matrix
+
+    if k == 0: return mod(mat[0][0])
+    if r == c == k: return sum_square(mat, dim)
+    # else split into kxk, r-kxk, kxc-k, r-kxc-k
+    return -1

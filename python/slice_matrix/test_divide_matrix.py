@@ -66,3 +66,11 @@ def helper_generate_matrix(a, r, c, loss, mod):
     return mat
 
 
+def test_sum_square_trivial():
+    assert sum_square(helper_generate_matrix(0, 1, 1, 0, 100), 1) == 0
+    assert sum_square(helper_generate_matrix(0, 8, 8, 0, 100), 1) == 0
+    assert sum_square(helper_generate_matrix(0, 8, 8, 0, 1000), 8) == 224
+    assert sum_square(helper_generate_matrix(5, 2, 2, 0, 100), 2) == 22
+    assert sum_square(helper_generate_matrix(0, 32, 32, 0, 100), 32) == 72
+    assert sum_square(helper_generate_matrix(0, 8, 8, 5, 100), 8) == -1  # not implemented
+    assert sum_square(helper_generate_matrix(1, 8, 8, 1, 1000), 8) == 224

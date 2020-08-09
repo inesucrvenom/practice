@@ -67,12 +67,25 @@ def helper_generate_matrix(a, r, c, loss, mod):
         mat.append(line)
     return mat
 
+@pytest.mark.parametrize(
+    "mat_params, dim, expected", [
+    ([0, 1, 1, 0, 100], 1, 0),
+    ([0, 8, 8, 0, 100], 1, 0),
+    ([0, 8, 8, 0, 1000], 8, 224),
+    ([5, 2, 2, 0, 100], 2, 22),
+    ([0, 32, 32, 0, 100], 32, 72),
+    ([1, 8, 8, 1, 1000], 8, 224),
+])
+def test_sum_square_trivial(mat_params, dim, expected):
+    initialise(mat_params[3], mat_params[4])
+    assert sum_square(helper_generate_matrix(*mat_params), dim) == expected
+    # *mat_param will unpack the list
 
-def test_sum_square_trivial():
-    assert sum_square(helper_generate_matrix(0, 1, 1, 0, 100), 1) == 0
-    assert sum_square(helper_generate_matrix(0, 8, 8, 0, 100), 1) == 0
-    assert sum_square(helper_generate_matrix(0, 8, 8, 0, 1000), 8) == 224
-    assert sum_square(helper_generate_matrix(5, 2, 2, 0, 100), 2) == 22
-    assert sum_square(helper_generate_matrix(0, 32, 32, 0, 100), 32) == 72
-    assert sum_square(helper_generate_matrix(0, 8, 8, 5, 100), 8) == -1  # not implemented
-    assert sum_square(helper_generate_matrix(1, 8, 8, 1, 1000), 8) == 224
+@pytest.mark.parametrize(
+    "mat_params, dim, expected", [
+    ([0, 8, 8, 5, 100], 8, -1),  # not implemented
+])
+def test_sum_square(mat_params, dim, expected):
+    initialise(mat_params[3], mat_params[4])
+    assert sum_square(helper_generate_matrix(*mat_params), dim) == expected
+    # *mat_param will unpack the list

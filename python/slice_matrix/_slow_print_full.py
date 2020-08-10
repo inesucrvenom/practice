@@ -46,14 +46,14 @@ def slow_print_no_table(m, n, l, t):
 
 
 """ ### testing area """
-do_this = 4
+do_this = 1
 """ toggle switch """
 
 if do_this == 1 and __name__ == '__main__':
-    dim = 32
+    # dim = 32
     mod = pow(10,5)
-    loss = 24
-    slow_print(dim, dim, loss, mod)
+    loss = 10
+    slow_print(20, 40, loss, mod)
 
 # print pattern only
 if do_this == 3 and __name__ == '__main__':
@@ -74,7 +74,7 @@ if do_this == 2 and __name__ == '__main__':
 
 
 if do_this == 4 and __name__ == '__main__':
-    dim = pow(2, 5) # 
+    dim = pow(2, 5) #
     formula = (dim / 2) * dim * (dim-1)
     formula = int(formula)
     print("{}x{}={}".format(dim, dim, formula))

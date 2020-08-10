@@ -1,7 +1,7 @@
 import pytest
 from unittest import mock
-from divide_matrix import get_globals, mod
-from divide_matrix import initialise, sum_square
+from divide_matrix import get_globals, apply_mod, apply_loss_mod
+from divide_matrix import initialise, sum_square, split_into_squares
 
 """check if numeric globals and dict are correctly initialised"""
 def test_initialise_globals():
@@ -55,37 +55,29 @@ def test_initialise_8x8_with_loss_and_mod():
     [0, 4, 3, 2, 1, 0, 0, 0]
     ]
 
-
-def helper_generate_matrix(a, r, c, loss, mod):
-    mat = []
-    for row in range(r):
-        line = []
-        for col in range(c):
-            item = a + (row ^ col) - loss
-            item = item % mod if item > 0 else 0
-            line.append(item)
-        mat.append(line)
-    return mat
+""" testing correctness of functions """
 
 @pytest.mark.parametrize(
-    "mat_params, dim, expected", [
-    ([0, 1, 1, 0, 100], 1, 0),
-    ([0, 8, 8, 0, 100], 1, 0),
-    ([0, 8, 8, 0, 1000], 8, 224),
-    ([5, 2, 2, 0, 100], 2, 22),
-    ([0, 32, 32, 0, 100], 32, 72),
-    ([1, 8, 8, 1, 1000], 8, 224),
+    "first_row_id, first_col_id, dim, loss, mod, expected", [
+    (0, 0, 1, 0, 100, 0),
+    (0, 0, 8, 0, 1000, 224),
+    (0, 0, 32, 0, 100, 72),
+    (8, 8, 8, 10, 1000, 0),
+    (8, 0, 8, 10, 1000, 120),
+    (8, 0, 2, 10, 1000, 0),
 ])
-def test_sum_square_trivial(mat_params, dim, expected):
-    initialise(mat_params[3], mat_params[4])
-    assert sum_square(helper_generate_matrix(*mat_params), dim) == expected
-    # *mat_param will unpack the list
+def test_sum_square(first_row_id, first_col_id, dim, loss, mod, expected):
+    initialise(loss, mod)
+    assert sum_square(first_row_id, first_col_id, dim) == expected
+
+# def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
 
 @pytest.mark.parametrize(
-    "mat_params, dim, expected", [
-    ([0, 8, 8, 5, 100], 8, -1),  # not implemented
+    "first_row_id, first_col_id, dim_rows, dim_cols, loss, mod, expected", [
+    (0, 0, 40, 20, 10, 10000, 9724),
 ])
-def test_sum_square(mat_params, dim, expected):
-    initialise(mat_params[3], mat_params[4])
-    assert sum_square(helper_generate_matrix(*mat_params), dim) == expected
-    # *mat_param will unpack the list
+def test_split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols,
+                            loss, mod, expected):
+    initialise(loss, mod)
+    assert split_into_squares(first_row_id, first_col_id,
+            dim_rows, dim_cols)== expected

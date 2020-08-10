@@ -48,6 +48,8 @@ OFFLOSS = []  # smallest block helper matrix
 MODULO = 0
 LOSS = 0
 
+from math import log2
+
 def get_globals():
     "function for testing purposes"
     return {
@@ -95,6 +97,9 @@ def apply_loss_mod(num):
     tmp = num - LOSS
     tmp = tmp if tmp > 0 else 0
     return apply_mod(tmp)
+
+# fals, we don't work with matrix itself, but only with indices, since matrix is
+# generated - correct this part! and tests!
 def split_by_loss(mat, r, c):
     """
     every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is a guaranteed square matrix unless it's smaller than SMALLEST_BLOCK_SIZE
@@ -119,24 +124,63 @@ def split_by_loss(mat, r, c):
     if LOSS == 0: return split_into_squares(mat, r, c)
     pass
 
-def split_into_squares(mat, r, c):
+def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     """
     gets matrix, and its dimensions, rows and columns
     find biggest k so that dim = 2**k <= smallest dim of B
     split B into new AA, BB, CC, DD where you use formula on AA and call split_into_squares on the rest
+
+    leave this if needed for optimisation
     if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
 
     returns sum_of_elements
     """
 
-    kr = int(log(r, 2))
-    kc = int(log(c, 2))
-    k = min(kr, kc)  # smallest k that 2**k x 2**k fits into r x c matrix
+    # we entered too deep, maybe do tests before entering?
+    if dim_rows <= 0 or dim_cols <= 0:
+        return 0
 
-    if k == 0: return mod(mat[0][0])
-    if r == c == k: return sum_square(mat, dim)
+    kr = int(log2(dim_rows))
+    kc = int(log2(dim_cols))
+    k = min(kr, kc)  # smallest k that 2**k x 2**k fits into r x c matrix
+    dim_splitter = 2**k
+
+    if k == 0: return apply_mod(mat[0][0])
+
+    # early returns
+    check = global_previous.get((first_row_id, first_col_id, dim_splitter))
+    if check is not None:
+        return check
+
+    # nothing to split into
+    if dim_rows == dim_cols == dim_splitter:
+        return sum_square(first_row_id, first_col_id, dim_splitter)
+
     # else split into kxk, r-kxk, kxc-k, r-kxc-k
-    return -1
+    result = 0
+
+     # k x k - sum only here, the rest are a new splits
+    result += sum_square(first_row_id, first_col_id, dim_splitter)
+
+    # r-k x c-k
+    result += split_into_squares(
+                first_row_id + dim_splitter, first_col_id + dim_splitter,
+                dim_rows - dim_splitter, dim_cols - dim_splitter
+                )
+
+    # r-k x k
+    result += split_into_squares(
+            first_row_id + dim_splitter, first_col_id,
+            dim_rows - dim_splitter, dim_splitter
+            )
+
+    # k x c-k
+    result += split_into_squares(
+            first_row_id, + dim_splitter,
+            dim_splitter, dim_cols - dim_splitter
+            )
+
+    return result
 
 
 def sum_square(first_row_id, first_col_id, dim):

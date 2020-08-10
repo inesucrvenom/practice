@@ -138,14 +138,33 @@ def split_into_squares(mat, r, c):
     # else split into kxk, r-kxk, kxc-k, r-kxc-k
     return -1
 
-def sum_square(mat, dim):
+
+def sum_square(first_row_id, first_col_id, dim):
     """ returns sum of matrix of dimension 2**k using formula"""
-    sum_row = 0
-    a = mat[0][0]
-    if a == 0 and mat[0][dim-1] == 0: return 0  # smallest and biggest are 0
-    if mat[0][1] == a + 1: return mod(dim * dim * (a + (dim - 1)/2))
+    global global_previous
+
+    smallest = apply_loss_mod(first_row_id ^ first_col_id)
+    next = apply_loss_mod(first_row_id ^ (first_col_id + 1))
+    biggest = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
+
+    if smallest == 0 and biggest == 0:
+        global_previous[(first_row_id, first_col_id, dim)] = 0
+        return 0
+    if next == smallest + 1:
+        tmp = apply_mod(dim * dim * (smallest + (dim - 1)/2))
+        global_previous[(first_row_id, first_col_id, dim)] = tmp
+        return tmp
+
     # the rest has to be summed directly, we don't know how many 0s are there
-    return -1
+    # but sum of the rows is the same for the each row
+    sum_row = 0
+    for item in range(dim):
+        sum_row += apply_loss_mod(first_row_id ^ item)
+
+    tmp = apply_mod(apply_mod(sum_row) * dim)
+    global_previous[(first_row_id, first_col_id, dim)] = tmp
+
+    return tmp
 
 
 def elder_age(m, n, l, t):

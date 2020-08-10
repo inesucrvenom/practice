@@ -83,16 +83,18 @@ def initialise(l, t):
     for row in range(SMALLEST_BLOCK_SIZE):
         new_row = []
         for col in range(SMALLEST_BLOCK_SIZE):
-            item = (row ^ col) - LOSS
-            item = mod(item) if item > 0 else 0
-            new_row.append(item)
+            new_row.append(apply_loss_mod(row ^ col))
         OFFLOSS.append(new_row)
 
-def mod(num):
+def apply_mod(num):
     """ simplifies writing of modulo num """
-    global MODULO
     return num % MODULO
 
+def apply_loss_mod(num):
+    """ simplifies writing of modulo loss """
+    tmp = num - LOSS
+    tmp = tmp if tmp > 0 else 0
+    return apply_mod(tmp)
 def split_by_loss(mat, r, c):
     """
     every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is a guaranteed square matrix unless it's smaller than SMALLEST_BLOCK_SIZE

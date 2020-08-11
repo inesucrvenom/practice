@@ -274,7 +274,7 @@ def elder_age(cols, rows, loss, mod):
     # roughly, if mat dim are around 2**p, then big enough loss is 2**(p/2)
 
     if loss == 0:
-        sum_split_squares(0, 0, rows, cols)
+        return sum_split_squares(0, 0, rows, cols)
 
     loss_log_size = int(log2(loss))
     p_rows = int(log2(rows))
@@ -282,9 +282,9 @@ def elder_age(cols, rows, loss, mod):
     mat_log_size = min(p_rows, p_cols)
 
     if loss_log_size >= mat_log_size / 2:
-        sum_split_loss(0, 0, rows, cols)
+        return sum_split_loss(0, 0, rows, cols)
     else:
-        sum_split_squares(0, 0, rows, cols)
+        return sum_split_squares(0, 0, rows, cols)
 
 
 # for debugging purposes

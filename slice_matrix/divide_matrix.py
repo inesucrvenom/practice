@@ -1,4 +1,4 @@
-debug = 1
+debug = 0
 # pretty print of any matrix
 def pretty_print(first_row, first_col, dim):
     print("first_row, first_col, dim", first_row, first_col, dim)
@@ -17,6 +17,11 @@ def pretty_print(first_row, first_col, dim):
         if row % 8 == 7:
             print()
     print(" == ", sum_mat)
+
+def show_matrix(mat):
+    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
+                        for row in mat])
+    print(result, '\n')
 
 """
 a^b == a XOR b (bitwise XOR) in the code
@@ -284,4 +289,6 @@ def elder_age(cols, rows, loss, mod):
 
 # for debugging purposes
 if __name__ == '__main__':
-    assert elder_age(25, 34, 1, 1000) == 776
+    result = elder_age(25, 34, 1, 1000)
+    if debug: print(result)
+    assert result == 776

@@ -111,31 +111,59 @@ def apply_loss_mod(num):
     tmp = tmp if tmp > 0 else 0
     return apply_mod(tmp)
 
-# fals, we don't work with matrix itself, but only with indices, since matrix is
-# generated - correct this part! and tests!
-def split_by_loss(mat, r, c):
+
+def sum_split_loss(first_row_id, first_col_id, dim_rows, dim_cols):
     """
-    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D, where only A is a guaranteed square matrix unless it's smaller than SMALLEST_BLOCK_SIZE
+    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D
     A B
     C D
 
-    starting matrix has dimension row x col and LOSS
-    find biggest s so that 2**s <= LOSS - that will give 2**s null submatrices in the main one
-
-    rec_split: split the big one into A of dim 2**s and the rest
-
-    A is zero, skip it
-    call the same rec_split on D with same s
-
-    for B and C call split_into_squares
-
-    if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
-
+    based on loss
+    find biggest s so that 2**s <= LOSS - that will give 2**s null submatrices A
 
     returns sum_of_elements
     """
-    if LOSS == 0: return split_into_squares(mat, r, c)
-    pass
+
+    s = int(log2(LOSS))
+    dim_splitter = 2**s
+
+    result = 0
+
+    dim_bottom_rows = dim_rows - dim_splitter
+    dim_right_cols = dim_cols - dim_splitter
+
+    # top left is null
+    if dim_bottom_rows >= 0 and dim_right_cols >= 0:
+        result += 0
+    else:  # and there's nothing more beside null top left part
+        return 0
+
+    # bottom right is a candidate for repeating
+    # but only if residual dimensions are bigger than dim_splitter
+    if dim_splitter <= dim_bottom_rows and dim_splitter <= dim_right_cols:
+        result += sum_split_loss(first_row_id + dim_splitter,
+                                first_col_id + dim_splitter,
+                                dim_bottom_rows,
+                                dim_right_cols)
+    else:
+        result += sum_split_squares(first_row_id + dim_splitter,
+                                    first_col_id + dim_splitter,
+                                    dim_bottom_rows,
+                                    dim_right_cols)
+
+    # bottom left, split
+    result += sum_split_squares(
+            first_row_id + dim_splitter, first_col_id,
+            dim_bottom_rows, dim_splitter
+            )
+
+    # top right, split
+    result += sum_split_squares(
+            first_row_id, first_col_id + dim_splitter,
+            dim_splitter, dim_right_cols
+            )
+
+    return result
 
 def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     """

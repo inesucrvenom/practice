@@ -15,4 +15,4 @@ Since I've spend non trivial amount of time on them, I want to have them out in 
 
 Published under [MIT licence](LICENCE)
 
-![logo](repo-phython.png)
+![logo](repo-python.png)

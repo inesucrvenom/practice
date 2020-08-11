@@ -1,9 +1,22 @@
 debug = 1
 # pretty print of any matrix
-def pretty_print(mat):
-    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
-                        for row in mat])
-    print(result, '\n')
+def pretty_print(first_row, first_col, dim):
+    print("first_row, first_col, dim", first_row, first_col, dim)
+    sum_mat = 0
+    for row in range(dim):
+        sum_row = 0
+        line = ""
+        for col in range(dim):
+            item = apply_loss_mod((first_row + row) ^ (first_col + col))
+            sum_row += item
+            line += "{:3}".format(item)
+            if col % 8 == 7:
+                line += " "
+        sum_mat += sum_row
+        print(line, " = ", sum_row)
+        if row % 8 == 7:
+            print()
+    print(" == ", sum_mat)
 
 """
 a^b == a XOR b (bitwise XOR) in the code
@@ -190,13 +203,17 @@ def sum_square(first_row_id, first_col_id, dim):
     smallest = apply_loss_mod(first_row_id ^ first_col_id)
     next = apply_loss_mod(first_row_id ^ (first_col_id + 1))
     biggest = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
+    if debug: pretty_print(first_row_id, first_col_id, dim)
 
     if smallest == 0 and biggest == 0:
         global_previous[(first_row_id, first_col_id, dim)] = 0
+        if debug: print("mat0", 0)
         return 0
     if next == smallest + 1:
         tmp = apply_mod(dim * dim * (smallest + (dim - 1)/2))
         global_previous[(first_row_id, first_col_id, dim)] = tmp
+        if debug: print("mat_have", check)
+        if debug: print("mat_full", tmp)
         return tmp
 
     # the rest has to be summed directly, we don't know how many 0s are there
@@ -208,6 +225,7 @@ def sum_square(first_row_id, first_col_id, dim):
     tmp = apply_mod(apply_mod(sum_row) * dim)
     global_previous[(first_row_id, first_col_id, dim)] = tmp
 
+    if debug: print("mat_calc", tmp)
     return tmp
 
 

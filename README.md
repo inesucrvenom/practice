@@ -1,18 +1,18 @@
-![logo](repo-code.png)
+![logo](repo-python.png)
 
 ## About
-Various short programs, common algorithms and similar crowd.
+Various (short) programs, common algorithms and similar crowd.
 
-Made for different coding websites (checkio, codility, codewars...), and intentionally somewhat obscured in order to make searching for direct solutions somewhat harder. Because of that I also didn't link to original source / creators / respective owner of the problem either.
+Made for different coding websites (checkio, codility, codewars...).
+Also for courses or job interviews.
 
-That means only the solutions belong to me, but I haven't created the problems so I don't hold any rights to them, but their respective owners do.
+Intentionally somewhat obscured in order to make searching for direct solutions somewhat harder. Because of that I also didn't link to original source / creators / respective owner of the problem either.
 
-However, since I used git anyway on them, and spend non trivial amount of time on them, I want to have them in the open.
+Since I've spend non trivial amount of time on them, I want to have them out in the open.
 
 ## Licence
 **Tl;dr: Learn from here, don't present materials as yours.**
 
-My code is published under [MIT licence](LICENCE)
-However, original problems might not be. Thread carefully.
+Published under [MIT licence](LICENCE)
 
-![logo](repo-code.png)
+![logo](repo-phython.png)

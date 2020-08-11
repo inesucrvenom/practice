@@ -1,7 +1,8 @@
 import pytest
 from unittest import mock
 from divide_matrix import get_globals, apply_mod, apply_loss_mod
-from divide_matrix import initialise, sum_square, split_into_squares
+from divide_matrix import initialise, sum_square, sum_split_squares
+from divide_matrix import sum_split_loss, elder_age
 
 """check if numeric globals and dict are correctly initialised"""
 def test_initialise_globals():
@@ -70,7 +71,6 @@ def test_sum_square(first_row_id, first_col_id, dim, loss, mod, expected):
     initialise(loss, mod)
     assert sum_square(first_row_id, first_col_id, dim) == expected
 
-# def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
 
 @pytest.mark.parametrize(
     "first_row_id, first_col_id, dim_rows, dim_cols, loss, mod, expected", [
@@ -79,5 +79,66 @@ def test_sum_square(first_row_id, first_col_id, dim, loss, mod, expected):
 def test_split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols,
                             loss, mod, expected):
     initialise(loss, mod)
-    assert split_into_squares(first_row_id, first_col_id,
-            dim_rows, dim_cols)== expected
+    assert sum_split_squares(first_row_id, first_col_id,
+            dim_rows, dim_cols) == expected
+
+
+@pytest.mark.parametrize(
+    "first_row_id, first_col_id, dim_rows, dim_cols, loss, mod, expected", [
+    (0, 0, 40, 20, 10, 10000, 9724),
+])
+def test_split_by_loss(first_row_id, first_col_id, dim_rows, dim_cols,
+                            loss, mod, expected):
+    initialise(loss, mod)
+    assert sum_split_loss(first_row_id, first_col_id,
+            dim_rows, dim_cols) == expected
+
+
+
+"""
+Tests for main function
+elder_age
+"""
+
+@pytest.mark.parametrize(
+    "c, r, loss, modulo, expected", [
+    (25, 34, 1, 1000, 776),
+    # (5, 4, 1, 1000, 30),
+    # (5, 8, 1, 1000, 105),
+    # (8, 4, 1, 1000, 84),
+    # (16, 4, 1, 1000, 420),
+    # (5, 16, 1, 1000, 525),
+    # (16, 8, 1, 10000, 840),
+    # (8, 16, 1, 10000, 840),
+    # (25, 34, 1, 10000, 3776),
+    # (10, 4, 3, 10000, 92),
+    # (5, 10, 2, 10000, 156),
+    # (32, 17, 0, 10000, 8432),
+    # (25, 34, 30, 10000,726),
+    ])
+def test_elder_my(c, r, loss, modulo, expected):
+    assert elder_age(c, r, loss, modulo) == expected
+#
+#
+#
+# #@pytest.mark.timeout(3)  # stop after 3 sec if they need longer
+# @pytest.mark.parametrize(
+#     "c, r, loss, modulo, expected", [
+#     (8, 5, 1, 100, 5),
+#     (8, 8, 0, 100007, 224),
+#     (25, 31, 0, 100007, 11925),
+#     (5, 45, 3, 1000007, 4323),
+#     (31, 39, 7, 2345, 1586),
+#     (545, 435, 342, 1000007, 808451),
+#     ])
+# def test_elder_his(c, r, loss, modulo, expected):
+#     assert elder_age(c, r, loss, modulo) == expected
+#
+#
+# #@pytest.mark.timeout(3)  # stop after 3 sec if they need longer
+# @pytest.mark.parametrize(
+#     "c, r, loss, modulo, expected", [
+#     (28827050410, 35165045587, 7109602, 13719506, 5456283),
+#     ])
+# def test_elder_might_take_long(c, r, loss, modulo, expected):
+#     assert elder_age(c, r, loss, modulo) == expected

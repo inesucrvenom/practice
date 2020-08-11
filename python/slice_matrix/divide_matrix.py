@@ -153,17 +153,15 @@ def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     if dim_rows <= 0 or dim_cols <= 0:
         return 0
 
+    # find smallest k that 2**k x 2**k fits into dim_rows x dim_cols matrix
     kr = int(log2(dim_rows))
     kc = int(log2(dim_cols))
-    k = min(kr, kc)  # smallest k that 2**k x 2**k fits into r x c matrix
+    k = min(kr, kc)
     dim_splitter = 2**k
 
-    if k == 0: return apply_mod(mat[0][0])
-
-    # early returns
-    check = global_previous.get((first_row_id, first_col_id, dim_splitter))
-    if check is not None:
-        return check
+    # not implemented yet
+    # if dim_splitter <= SMALLEST_BLOCK_SIZE:
+    #     return -1  # use old solutions, but think about narrow ones
 
     # nothing to split into
     if dim_rows == dim_cols == dim_splitter:
@@ -172,24 +170,24 @@ def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     # else split into kxk, r-kxk, kxc-k, r-kxc-k
     result = 0
 
-     # k x k - sum only here, the rest are a new splits
+     # top left, 2**k x 2**k - sum only here, the rest are a new splits
     result += sum_square(first_row_id, first_col_id, dim_splitter)
 
-    # r-k x c-k
+    # bottom_right, 2**(r-k) x 2**(c-k)
     result += split_into_squares(
                 first_row_id + dim_splitter, first_col_id + dim_splitter,
                 dim_rows - dim_splitter, dim_cols - dim_splitter
                 )
 
-    # r-k x k
+    # bottom left, 2**(r-k) x 2**k
     result += split_into_squares(
             first_row_id + dim_splitter, first_col_id,
             dim_rows - dim_splitter, dim_splitter
             )
 
-    # k x c-k
+    # top right, 2**k x 2**(c-k)
     result += split_into_squares(
-            first_row_id, + dim_splitter,
+            first_row_id, first_col_id + dim_splitter,
             dim_splitter, dim_cols - dim_splitter
             )
 

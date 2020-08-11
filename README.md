@@ -1,4 +1,4 @@
-![logo](repo-site.png)
+![logo](repo-code.png)
 
 ## About
 Various short programs, common algorithms and similar crowd.
@@ -15,4 +15,4 @@ However, since I used git anyway on them, and spend non trivial amount of time o
 My code is published under [MIT licence](LICENCE)
 However, original problems might not be. Thread carefully.
 
-![logo](repo-site.png)
+![logo](repo-code.png)

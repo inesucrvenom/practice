@@ -165,14 +165,11 @@ def sum_split_loss(first_row_id, first_col_id, dim_rows, dim_cols):
 
     return result
 
-def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
+def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     """
-    gets matrix, and its dimensions, rows and columns
+    gets top left element indices, number of rows and columns
     find biggest k so that dim = 2**k <= smallest dim of B
     split B into new AA, BB, CC, DD where you use formula on AA and call split_into_squares on the rest
-
-    leave this if needed for optimisation
-    if any A, B, C, or D <= SMALLEST_BLOCK_SIZE stop and use old solutions
 
     returns sum_of_elements
     """
@@ -201,22 +198,25 @@ def split_into_squares(first_row_id, first_col_id, dim_rows, dim_cols):
      # top left, 2**k x 2**k - sum only here, the rest are a new splits
     result += sum_square(first_row_id, first_col_id, dim_splitter)
 
+    dim_bottom_rows = dim_rows - dim_splitter
+    dim_right_cols = dim_cols - dim_splitter
+
     # bottom_right, 2**(r-k) x 2**(c-k)
-    result += split_into_squares(
+    result += sum_split_squares(
                 first_row_id + dim_splitter, first_col_id + dim_splitter,
-                dim_rows - dim_splitter, dim_cols - dim_splitter
+                dim_bottom_rows, dim_right_cols
                 )
 
     # bottom left, 2**(r-k) x 2**k
-    result += split_into_squares(
+    result += sum_split_squares(
             first_row_id + dim_splitter, first_col_id,
-            dim_rows - dim_splitter, dim_splitter
+            dim_bottom_rows, dim_splitter
             )
 
     # top right, 2**k x 2**(c-k)
-    result += split_into_squares(
+    result += sum_split_squares(
             first_row_id, first_col_id + dim_splitter,
-            dim_splitter, dim_cols - dim_splitter
+            dim_splitter, dim_right_cols
             )
 
     return result

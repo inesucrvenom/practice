@@ -224,7 +224,7 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
             dim_splitter, dim_right_cols
             )
 
-    return result
+    return apply_mod(result)
 
 
 def sum_square(first_row_id, first_col_id, dim):

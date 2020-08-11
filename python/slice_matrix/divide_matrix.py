@@ -261,6 +261,27 @@ def sum_square(first_row_id, first_col_id, dim):
     return tmp
 
 
-def elder_age(m, n, l, t):
-    initialise(l, t)
-    return sum_split_table(n, m)  # reverse order bc it's easier for me
+def elder_age(cols, rows, loss, mod):
+    initialise(loss, mod)
+
+    # when loss is big it makes sense to split by loss
+    # it depends on matrix dimensions
+    # roughly, if mat dim are around 2**p, then big enough loss is 2**(p/2)
+
+    if loss == 0:
+        sum_split_squares(0, 0, rows, cols)
+
+    loss_log_size = int(log2(loss))
+    p_rows = int(log2(rows))
+    p_cols = int(log2(cols))
+    mat_log_size = min(p_rows, p_cols)
+
+    if loss_log_size >= mat_log_size / 2:
+        sum_split_loss(0, 0, rows, cols)
+    else:
+        sum_split_squares(0, 0, rows, cols)
+
+
+# for debugging purposes
+if __name__ == '__main__':
+    assert elder_age(25, 34, 1, 1000) == 776

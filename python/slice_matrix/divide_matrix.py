@@ -200,30 +200,36 @@ def sum_square(first_row_id, first_col_id, dim):
     """ returns sum of matrix of dimension 2**k using formula"""
     global global_previous
 
-    smallest = apply_loss_mod(first_row_id ^ first_col_id)
-    next = apply_loss_mod(first_row_id ^ (first_col_id + 1))
-    biggest = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
     if debug: pretty_print(first_row_id, first_col_id, dim)
+    smallest_el = apply_loss_mod(first_row_id ^ first_col_id)
+    right_neighbour_el = apply_loss_mod(first_row_id ^ (first_col_id + 1))
+    biggest_el = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
 
-    if smallest == 0 and biggest == 0:
-        global_previous[(first_row_id, first_col_id, dim)] = 0
+    if smallest_el == 0 and biggest_el == 0:
         if debug: print("mat0", 0)
         return 0
-    if next == smallest + 1:
-        tmp = apply_mod(dim * dim * (smallest + (dim - 1)/2))
-        global_previous[(first_row_id, first_col_id, dim)] = tmp
+
+    # already have it
+    check = global_previous.get((biggest_el, dim))
+    if check is not None:
         if debug: print("mat_have", check)
+        return check
+
+    # can use formula for matrix
+    if right_neighbour_el == smallest_el + 1:
+        tmp = apply_mod(dim * dim * (smallest_el + (dim - 1)/2))
+        global_previous[(biggest_el, dim)] = tmp
         if debug: print("mat_full", tmp)
         return tmp
 
     # the rest has to be summed directly, we don't know how many 0s are there
     # but sum of the rows is the same for the each row
     sum_row = 0
-    for item in range(dim):
-        sum_row += apply_loss_mod(first_row_id ^ item)
+    for col in range(dim):
+        sum_row += apply_loss_mod(first_row_id ^ (first_col_id + col))
 
     tmp = apply_mod(apply_mod(sum_row) * dim)
-    global_previous[(first_row_id, first_col_id, dim)] = tmp
+    global_previous[(biggest_el, dim)] = tmp
 
     if debug: print("mat_calc", tmp)
     return tmp

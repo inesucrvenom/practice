@@ -1,13 +1,13 @@
 print_pattern = 0
 
 # dummy version, for testing purposes
-def slow_print(m, n, l, t):
-    print(m, n, l, t)
+def slow_print(cols, rows, l, t):
+    print(cols, rows, l, t)
     sum_all = 0
-    for row in range(n):
+    for row in range(rows):
         line = ''
         sum_line = 0
-        for col in range(m):
+        for col in range(cols):
             item = row ^ col
             item = item - l if item >= l else 0
             sum_line += item
@@ -50,10 +50,7 @@ do_this = 1
 """ toggle switch """
 
 if do_this == 1 and __name__ == '__main__':
-    # dim = 32
-    mod = pow(10,5)
-    loss = 10
-    slow_print(20, 40, loss, mod)
+    slow_print(25, 34, 1, 1000)
 
 # print pattern only
 if do_this == 3 and __name__ == '__main__':

@@ -63,12 +63,16 @@ sum_full = {all a elements + sum of matrix when a == o }
   C D       bottom-left = C     bottom-right = D
   ```
   - only A is a guaranteed to be a square matrix
-    - until its dimensions are smaller or equal to the SMALLEST_BLOCK_SIZE
+    - until its dimensions are smaller or equal to the OFFSET_SIZE
 """
+
+# constant independent of values given during the execution
+OFFSET_SIZE = 8  # todo: see if bigger block makes sense, and which
+# todo: check for 32, 64, 128
 
 # globals defined in the initalise function
 global_previous = {}  # (min_dim, max_dim, biggest_element_modulo_LOSS) TUPLE!!!
-OFFLOSS = []  # smallest block helper matrix
+OFFSET = []  # helper matrix of size OFFSET_SIZE
 MODULO = 0
 LOSS = 0
 
@@ -78,14 +82,10 @@ def get_globals():
     "function for testing purposes"
     return {
         "global_previous": global_previous,
-        "OFFLOSS": OFFLOSS,
+        "OFFSET": OFFSET,
         "MODULO": MODULO,
         "LOSS": LOSS
     }
-
-# constant independent of values given during the execution
-SMALLEST_BLOCK_SIZE = 8  # todo: see if bigger block makes sense, and which
-# todo: check for 32, 64, 128
 
 def initialise(l, t):
     """
@@ -94,23 +94,23 @@ def initialise(l, t):
     - global_previous : dict, stores intermediary values of matrix sum calculations
         key: (min_dim, max_dim, biggest_element_modulo_LOSS)
             where dim are number of rows or columns
-    - OFFLOSS : table, store offset values from a in a square matrix - LOSS
+    - OFFSET : table, store offset values from a in a square matrix - LOSS
         - a is top left element
         - will be used to calculate sums for smallest non square block matrices
-        - current size: SMALLEST_BLOCK_SIZE
+        - current size: OFFSET_SIZE
     """
-    global MODULO, LOSS, OFFLOSS, global_previous
+    global MODULO, LOSS, OFFSET, global_previous
 
     global_previous = {}
     MODULO = t
     LOSS = l
-    OFFLOSS = []
+    OFFSET = []
 
-    for row in range(SMALLEST_BLOCK_SIZE):
+    for row in range(OFFSET_SIZE):
         new_row = []
-        for col in range(SMALLEST_BLOCK_SIZE):
-            new_row.append(apply_loss_mod(row ^ col))
-        OFFLOSS.append(new_row)
+        for col in range(OFFSET_SIZE):
+            new_row.append(apply_mod(row ^ col))
+        OFFSET.append(new_row)
 
 def apply_mod(num):
     """ simplifies writing of modulo num """
@@ -142,12 +142,8 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     # find smallest k that 2**k x 2**k fits into dim_rows x dim_cols matrix
     kr = int(log2(dim_rows))
     kc = int(log2(dim_cols))
-    k = min(kr, kc)
-    dim_splitter = 2**k
+    dim_splitter = 2**min(kr, kc)
 
-    # not implemented yet
-    # if dim_splitter <= SMALLEST_BLOCK_SIZE:
-    #     return -1  # use old solutions, but think about narrow ones
 
     # nothing to split into
     if dim_rows == dim_cols == dim_splitter:
@@ -162,24 +158,42 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     dim_bottom_rows = dim_rows - dim_splitter
     dim_right_cols = dim_cols - dim_splitter
 
+    # if max(dim_rows, dim_cols) <= OFFSET_SIZE:
+    #     return sum_smaller_then_smallest_size(first_row_id, first_col_id,
+    #                                             dim_rows, dim_cols)
+
     # bottom_right, 2**(r-k) x 2**(c-k)
-    result += sum_split_squares(
-                first_row_id + dim_splitter, first_col_id + dim_splitter,
-                dim_bottom_rows, dim_right_cols
-                )
+    if dim_bottom_rows > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
+        result += sum_split_squares(
+                    first_row_id + dim_splitter, first_col_id + dim_splitter,
+                    dim_bottom_rows, dim_right_cols
+                    )
+    else:
+        result += sum_per_offset(first_row_id + dim_splitter,
+                    first_col_id + dim_splitter,
+                    dim_bottom_rows, dim_right_cols)
 
     # bottom left, 2**(r-k) x 2**k
-    result += sum_split_squares(
-            first_row_id + dim_splitter, first_col_id,
-            dim_bottom_rows, dim_splitter
-            )
+    if dim_bottom_rows > OFFSET_SIZE and dim_splitter >  OFFSET_SIZE:
+        result += sum_split_squares(
+                first_row_id + dim_splitter, first_col_id,
+                dim_bottom_rows, dim_splitter
+                )
+    else:
+        result += sum_per_offset(first_row_id + dim_splitter, first_col_id,
+                        dim_bottom_rows, dim_splitter)
 
     # top right, 2**k x 2**(c-k)
-    result += sum_split_squares(
-            first_row_id, first_col_id + dim_splitter,
-            dim_splitter, dim_right_cols
-            )
-
+    if dim_splitter > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
+        result += sum_split_squares(
+                first_row_id, first_col_id + dim_splitter,
+                dim_splitter, dim_right_cols
+                )
+    else:
+        result += sum_per_offset(first_row_id, first_col_id + dim_splitter,
+                        dim_splitter, dim_right_cols
+                        )
+    if debug: print("end split", apply_mod(result))
     return apply_mod(result)
 
 
@@ -223,8 +237,18 @@ def sum_square(first_row_id, first_col_id, dim):
     return tmp
 
 
+def sum_per_offset(first_row_id, first_col_id, dim_rows, dim_cols):
+    if debug: print_debug(["---smallest---", first_row_id, first_col_id, dim_rows, dim_cols])
 
+    ########
     if debug: pretty_print(first_row_id, first_col_id, dim_rows, dim_cols)
+    smallest_el = apply_mod(first_row_id ^ first_col_id)
+    result_sum = 0
+    for row in range(dim_rows):
+        for col in range(dim_cols):
+            tmp = OFFSET[row][col]
+            item = apply_loss_mod(smallest_el + OFFSET[row][col])
+            result_sum = apply_mod(result_sum + item)
 
     if debug: print("end smallest", apply_mod(result_sum))
     return apply_mod(result_sum)

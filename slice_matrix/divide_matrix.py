@@ -1,12 +1,16 @@
-debug = 0
-# pretty print of any matrix
-def pretty_print(first_row, first_col, dim):
-    print("first_row, first_col, dim", first_row, first_col, dim)
+debug = 1
+
+def print_debug(inputs):
+    print(">>>", inputs)
+    # print(global_previous)
+
+def pretty_print(first_row, first_col, rows, cols):
+    print("first_row, first_col, dim", first_row, first_col, rows, cols)
     sum_mat = 0
-    for row in range(dim):
+    for row in range(rows):
         sum_row = 0
         line = ""
-        for col in range(dim):
+        for col in range(cols):
             item = apply_loss_mod((first_row + row) ^ (first_col + col))
             sum_row += item
             line += "{:3}".format(item)
@@ -22,6 +26,8 @@ def show_matrix(mat):
     result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
                         for row in mat])
     print(result, '\n')
+
+#### end of debug helpers
 
 """
 a^b == a XOR b (bitwise XOR) in the code
@@ -126,7 +132,9 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
 
     returns sum_of_elements
     """
+    if debug: print_debug(["split squares", first_row_id, first_col_id, dim_rows, dim_cols])
 
+    ########
     # we entered too deep, maybe do tests before entering?
     if dim_rows <= 0 or dim_cols <= 0:
         return 0
@@ -178,27 +186,28 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
 def sum_square(first_row_id, first_col_id, dim):
     """ returns sum of matrix of dimension 2**k using formula"""
     global global_previous
+    if debug: print_debug([sum_square, first_row_id, first_col_id, dim, dim])
 
-    if debug: pretty_print(first_row_id, first_col_id, dim)
+    if debug: pretty_print(first_row_id, first_col_id, dim, dim)
     smallest_el = apply_loss_mod(first_row_id ^ first_col_id)
     right_neighbour_el = apply_loss_mod(first_row_id ^ (first_col_id + 1))
     biggest_el = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
 
     if smallest_el == 0 and biggest_el == 0:
-        if debug: print("mat0", 0)
+        if debug: print("end mat0", 0)
         return 0
 
     # already have it
     check = global_previous.get((biggest_el, dim))
     if check is not None:
-        if debug: print("mat_have", check)
+        if debug: print("end mat_have g_p", biggest_el, dim, " ==> ", check)
         return check
 
     # can use formula for matrix
     if right_neighbour_el == smallest_el + 1:
         tmp = apply_mod(dim * dim * (smallest_el + (dim - 1)/2))
         global_previous[(biggest_el, dim)] = tmp
-        if debug: print("mat_full", tmp)
+        if debug: print("end mat sum formula", tmp)
         return tmp
 
     # the rest has to be summed directly, we don't know how many 0s are there
@@ -210,11 +219,12 @@ def sum_square(first_row_id, first_col_id, dim):
     tmp = apply_mod(apply_mod(sum_row) * dim)
     global_previous[(biggest_el, dim)] = tmp
 
-    if debug: print("mat_calc", tmp)
+    if debug: print("end mat sum rows", tmp)
     return tmp
 
 
 
+    if debug: pretty_print(first_row_id, first_col_id, dim_rows, dim_cols)
 
     if debug: print("end smallest", apply_mod(result_sum))
     return apply_mod(result_sum)

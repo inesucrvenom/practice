@@ -1,8 +1,10 @@
 debug = 1
 
+
 def print_debug(inputs):
     print(">>>", inputs)
     # print(global_previous)
+
 
 def pretty_print(first_row, first_col, rows, cols):
     print("first_row, first_col, dim", first_row, first_col, rows, cols)
@@ -22,10 +24,13 @@ def pretty_print(first_row, first_col, rows, cols):
             print()
     print(" == ", sum_mat)
 
+
 def show_matrix(mat):
-    result = '\n'.join([''.join(['{:3}'.format(item) for item in row])
-                        for row in mat])
-    print(result, '\n')
+    result = "\n".join(
+        ["".join(["{:3}".format(item) for item in row]) for row in mat]
+    )
+    print(result, "\n")
+
 
 #### end of debug helpers
 
@@ -78,14 +83,16 @@ LOSS = 0
 
 from math import log2
 
+
 def get_globals():
     "function for testing purposes"
     return {
         "global_previous": global_previous,
         "OFFSET": OFFSET,
         "MODULO": MODULO,
-        "LOSS": LOSS
+        "LOSS": LOSS,
     }
+
 
 def initialise(l, t):
     """
@@ -112,16 +119,17 @@ def initialise(l, t):
             new_row.append(apply_mod(row ^ col))
         OFFSET.append(new_row)
 
+
 def apply_mod(num):
     """ simplifies writing of modulo num """
     return num % MODULO
+
 
 def apply_loss_mod(num):
     """ simplifies writing of modulo loss """
     tmp = num - LOSS
     tmp = tmp if tmp > 0 else 0
     return apply_mod(tmp)
-
 
 
 def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
@@ -132,7 +140,10 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
 
     returns sum_of_elements
     """
-    if debug: print_debug(["split squares", first_row_id, first_col_id, dim_rows, dim_cols])
+    if debug:
+        print_debug(
+            ["split squares", first_row_id, first_col_id, dim_rows, dim_cols]
+        )
 
     ########
     # we entered too deep, maybe do tests before entering?
@@ -142,8 +153,7 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     # find smallest k that 2**k x 2**k fits into dim_rows x dim_cols matrix
     kr = int(log2(dim_rows))
     kc = int(log2(dim_cols))
-    dim_splitter = 2**min(kr, kc)
-
+    dim_splitter = 2 ** min(kr, kc)
 
     # nothing to split into
     if dim_rows == dim_cols == dim_splitter:
@@ -152,7 +162,7 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     # else split into kxk, r-kxk, kxc-k, r-kxc-k
     result = 0
 
-     # top left, 2**k x 2**k - sum only here, the rest are a new splits
+    # top left, 2**k x 2**k - sum only here, the rest are a new splits
     result += sum_square(first_row_id, first_col_id, dim_splitter)
 
     dim_bottom_rows = dim_rows - dim_splitter
@@ -165,63 +175,85 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     # bottom_right, 2**(r-k) x 2**(c-k)
     if dim_bottom_rows > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
         result += sum_split_squares(
-                    first_row_id + dim_splitter, first_col_id + dim_splitter,
-                    dim_bottom_rows, dim_right_cols
-                    )
+            first_row_id + dim_splitter,
+            first_col_id + dim_splitter,
+            dim_bottom_rows,
+            dim_right_cols,
+        )
     else:
-        result += sum_per_offset(first_row_id + dim_splitter,
-                    first_col_id + dim_splitter,
-                    dim_bottom_rows, dim_right_cols)
+        result += sum_per_offset(
+            first_row_id + dim_splitter,
+            first_col_id + dim_splitter,
+            dim_bottom_rows,
+            dim_right_cols,
+        )
 
     # bottom left, 2**(r-k) x 2**k
-    if dim_bottom_rows > OFFSET_SIZE and dim_splitter >  OFFSET_SIZE:
+    if dim_bottom_rows > OFFSET_SIZE and dim_splitter > OFFSET_SIZE:
         result += sum_split_squares(
-                first_row_id + dim_splitter, first_col_id,
-                dim_bottom_rows, dim_splitter
-                )
+            first_row_id + dim_splitter,
+            first_col_id,
+            dim_bottom_rows,
+            dim_splitter,
+        )
     else:
-        result += sum_per_offset(first_row_id + dim_splitter, first_col_id,
-                        dim_bottom_rows, dim_splitter)
+        result += sum_per_offset(
+            first_row_id + dim_splitter,
+            first_col_id,
+            dim_bottom_rows,
+            dim_splitter,
+        )
 
     # top right, 2**k x 2**(c-k)
     if dim_splitter > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
         result += sum_split_squares(
-                first_row_id, first_col_id + dim_splitter,
-                dim_splitter, dim_right_cols
-                )
+            first_row_id,
+            first_col_id + dim_splitter,
+            dim_splitter,
+            dim_right_cols,
+        )
     else:
-        result += sum_per_offset(first_row_id, first_col_id + dim_splitter,
-                        dim_splitter, dim_right_cols
-                        )
-    if debug: print("end split", apply_mod(result))
+        result += sum_per_offset(
+            first_row_id,
+            first_col_id + dim_splitter,
+            dim_splitter,
+            dim_right_cols,
+        )
+    if debug:
+        print("end split", apply_mod(result))
     return apply_mod(result)
 
 
 def sum_square(first_row_id, first_col_id, dim):
     """ returns sum of matrix of dimension 2**k using formula"""
     global global_previous
-    if debug: print_debug([sum_square, first_row_id, first_col_id, dim, dim])
+    if debug:
+        print_debug([sum_square, first_row_id, first_col_id, dim, dim])
 
-    if debug: pretty_print(first_row_id, first_col_id, dim, dim)
+    if debug:
+        pretty_print(first_row_id, first_col_id, dim, dim)
     smallest_el = apply_loss_mod(first_row_id ^ first_col_id)
     right_neighbour_el = apply_loss_mod(first_row_id ^ (first_col_id + 1))
     biggest_el = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
 
     if smallest_el == 0 and biggest_el == 0:
-        if debug: print("end mat0", 0)
+        if debug:
+            print("end mat0", 0)
         return 0
 
     # already have it
     check = global_previous.get((biggest_el, dim))
     if check is not None:
-        if debug: print("end mat_have g_p", biggest_el, dim, " ==> ", check)
+        if debug:
+            print("end mat_have g_p", biggest_el, dim, " ==> ", check)
         return check
 
     # can use formula for matrix
     if right_neighbour_el == smallest_el + 1:
-        tmp = apply_mod(dim * dim * (smallest_el + (dim - 1)/2))
+        tmp = apply_mod(dim * dim * (smallest_el + (dim - 1) / 2))
         global_previous[(biggest_el, dim)] = tmp
-        if debug: print("end mat sum formula", tmp)
+        if debug:
+            print("end mat sum formula", tmp)
         return tmp
 
     # the rest has to be summed directly, we don't know how many 0s are there
@@ -233,15 +265,20 @@ def sum_square(first_row_id, first_col_id, dim):
     tmp = apply_mod(apply_mod(sum_row) * dim)
     global_previous[(biggest_el, dim)] = tmp
 
-    if debug: print("end mat sum rows", tmp)
+    if debug:
+        print("end mat sum rows", tmp)
     return tmp
 
 
 def sum_per_offset(first_row_id, first_col_id, dim_rows, dim_cols):
-    if debug: print_debug(["---smallest---", first_row_id, first_col_id, dim_rows, dim_cols])
+    if debug:
+        print_debug(
+            ["---smallest---", first_row_id, first_col_id, dim_rows, dim_cols]
+        )
 
     ########
-    if debug: pretty_print(first_row_id, first_col_id, dim_rows, dim_cols)
+    if debug:
+        pretty_print(first_row_id, first_col_id, dim_rows, dim_cols)
     smallest_el = apply_mod(first_row_id ^ first_col_id)
     result_sum = 0
     for row in range(dim_rows):
@@ -250,7 +287,8 @@ def sum_per_offset(first_row_id, first_col_id, dim_rows, dim_cols):
             item = apply_loss_mod(smallest_el + OFFSET[row][col])
             result_sum = apply_mod(result_sum + item)
 
-    if debug: print("end smallest", apply_mod(result_sum))
+    if debug:
+        print("end smallest", apply_mod(result_sum))
     return apply_mod(result_sum)
 
 
@@ -258,6 +296,7 @@ def elder_age(cols, rows, loss, mod):
     initialise(loss, mod)
     return sum_split_squares(0, 0, rows, cols)
 
+
 # for debugging purposes
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(elder_age(25, 34, 1, 100000), 776)

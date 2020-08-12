@@ -117,58 +117,6 @@ def apply_loss_mod(num):
     return apply_mod(tmp)
 
 
-def sum_split_loss(first_row_id, first_col_id, dim_rows, dim_cols):
-    """
-    every matrix split will be top-left A, top-right B, bottom-left C, bottom-right D
-    A B
-    C D
-
-    based on loss
-    find biggest s so that 2**s <= LOSS - that will give 2**s null submatrices A
-
-    returns sum_of_elements
-    """
-
-    s = int(log2(LOSS))
-    dim_splitter = 2**s
-
-    result = 0
-
-    dim_bottom_rows = dim_rows - dim_splitter
-    dim_right_cols = dim_cols - dim_splitter
-
-    # top left is null
-    if dim_bottom_rows >= 0 and dim_right_cols >= 0:
-        result += 0
-    else:  # and there's nothing more beside null top left part
-        return 0
-
-    # bottom right is a candidate for repeating
-    # but only if residual dimensions are bigger than dim_splitter
-    if dim_splitter <= dim_bottom_rows and dim_splitter <= dim_right_cols:
-        result += sum_split_loss(first_row_id + dim_splitter,
-                                first_col_id + dim_splitter,
-                                dim_bottom_rows,
-                                dim_right_cols)
-    else:
-        result += sum_split_squares(first_row_id + dim_splitter,
-                                    first_col_id + dim_splitter,
-                                    dim_bottom_rows,
-                                    dim_right_cols)
-
-    # bottom left, split
-    result += sum_split_squares(
-            first_row_id + dim_splitter, first_col_id,
-            dim_bottom_rows, dim_splitter
-            )
-
-    # top right, split
-    result += sum_split_squares(
-            first_row_id, first_col_id + dim_splitter,
-            dim_splitter, dim_right_cols
-            )
-
-    return apply_mod(result)
 
 def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     """
@@ -266,29 +214,16 @@ def sum_square(first_row_id, first_col_id, dim):
     return tmp
 
 
+
+
+    if debug: print("end smallest", apply_mod(result_sum))
+    return apply_mod(result_sum)
+
+
 def elder_age(cols, rows, loss, mod):
     initialise(loss, mod)
-
-    # when loss is big it makes sense to split by loss
-    # it depends on matrix dimensions
-    # roughly, if mat dim are around 2**p, then big enough loss is 2**(p/2)
-
-    if loss == 0:
-        return sum_split_squares(0, 0, rows, cols)
-
-    loss_log_size = int(log2(loss))
-    p_rows = int(log2(rows))
-    p_cols = int(log2(cols))
-    mat_log_size = min(p_rows, p_cols)
-
-    if loss_log_size >= mat_log_size / 2:
-        return sum_split_loss(0, 0, rows, cols)
-    else:
-        return sum_split_squares(0, 0, rows, cols)
-
+    return sum_split_squares(0, 0, rows, cols)
 
 # for debugging purposes
 if __name__ == '__main__':
-    result = elder_age(25, 34, 1, 1000)
-    if debug: print(result)
-    assert result == 776
+    print(elder_age(25, 34, 1, 100000), 776)

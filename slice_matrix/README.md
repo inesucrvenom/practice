@@ -84,3 +84,7 @@ LOSS >= dim/2:
 - with some simple testing, it might have sense to spare some recursion calls and calculate some bigger blocks than 8x8 directly
 one candidate is 32x32, another is 64x64
 - in any case, for smallest blocks, we want DELTAS_LOSS table and will just sum through the needed part of it
+
+#### 12 Aug
+have correctly working using recursions, but still too slow
+trying to implement with bigger default block

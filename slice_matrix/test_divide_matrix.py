@@ -14,7 +14,7 @@ def test_initialise_globals():
 
 
 """check if initialise generates correct offset offset matrix of size 8"""
-@mock.patch('divide_matrix.SMALLEST_BLOCK_SIZE', 8)
+@mock.patch('divide_matrix.OFFSET_SIZE', 8)
 def test_initialise_8x8(mocker):
     initialise(3, 10)
     assert get_globals()["OFFSET"] == [
@@ -29,7 +29,7 @@ def test_initialise_8x8(mocker):
     ]
 
 
-@mock.patch('divide_matrix.SMALLEST_BLOCK_SIZE', 8)
+@mock.patch('divide_matrix.OFFSET_SIZE', 8)
 def test_initialise_8x8_with_loss_and_mod():
     initialise(2, 5)
     assert get_globals()["OFFSET"] == [

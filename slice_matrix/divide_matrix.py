@@ -136,7 +136,8 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     """
     gets top left element indices, number of rows and columns
     find biggest k so that dim = 2**k <= smallest dim of B
-    split B into new AA, BB, CC, DD where you use formula on AA and call split_into_squares on the rest
+    split B into new AA, BB, CC, DD where you use formula on AA and
+        call split_into_squares on the rest
 
     returns sum_of_elements
     """
@@ -145,10 +146,35 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
             ["split squares", first_row_id, first_col_id, dim_rows, dim_cols]
         )
 
-    ########
-    # we entered too deep, maybe do tests before entering?
-    if dim_rows <= 0 or dim_cols <= 0:
-        return 0
+    if dim_rows <= OFFSET_SIZE and dim_cols <= OFFSET_SIZE:
+        return sum_per_offset(first_row_id, first_col_id, dim_rows, dim_cols)
+
+    # something smaller than offset but only in one dimension
+    result = 0
+
+    if dim_rows <= OFFSET_SIZE:
+        result += sum_per_offset(
+            first_row_id, first_col_id, dim_rows, OFFSET_SIZE
+        )
+        result += sum_split_squares(
+            first_row_id,
+            first_col_id + OFFSET_SIZE,
+            dim_rows,
+            dim_cols - OFFSET_SIZE,
+        )
+        return result
+
+    if dim_cols <= OFFSET_SIZE:
+        result += sum_per_offset(
+            first_row_id, first_col_id, OFFSET_SIZE, dim_cols
+        )
+        result += sum_split_squares(
+            first_row_id + OFFSET_SIZE,
+            first_col_id,
+            dim_rows - OFFSET_SIZE,
+            dim_cols,
+        )
+        return result
 
     # find smallest k that 2**k x 2**k fits into dim_rows x dim_cols matrix
     kr = int(log2(dim_rows))
@@ -159,66 +185,33 @@ def sum_split_squares(first_row_id, first_col_id, dim_rows, dim_cols):
     if dim_rows == dim_cols == dim_splitter:
         return sum_square(first_row_id, first_col_id, dim_splitter)
 
-    # else split into kxk, r-kxk, kxc-k, r-kxc-k
-    result = 0
-
     # top left, 2**k x 2**k - sum only here, the rest are a new splits
     result += sum_square(first_row_id, first_col_id, dim_splitter)
 
     dim_bottom_rows = dim_rows - dim_splitter
     dim_right_cols = dim_cols - dim_splitter
 
-    # if max(dim_rows, dim_cols) <= OFFSET_SIZE:
-    #     return sum_smaller_then_smallest_size(first_row_id, first_col_id,
-    #                                             dim_rows, dim_cols)
-
     # bottom_right, 2**(r-k) x 2**(c-k)
-    if dim_bottom_rows > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
-        result += sum_split_squares(
-            first_row_id + dim_splitter,
-            first_col_id + dim_splitter,
-            dim_bottom_rows,
-            dim_right_cols,
-        )
-    else:
-        result += sum_per_offset(
-            first_row_id + dim_splitter,
-            first_col_id + dim_splitter,
-            dim_bottom_rows,
-            dim_right_cols,
-        )
+    result += sum_split_squares(
+        first_row_id + dim_splitter,
+        first_col_id + dim_splitter,
+        dim_bottom_rows,
+        dim_right_cols,
+    )
 
     # bottom left, 2**(r-k) x 2**k
-    if dim_bottom_rows > OFFSET_SIZE and dim_splitter > OFFSET_SIZE:
-        result += sum_split_squares(
-            first_row_id + dim_splitter,
-            first_col_id,
-            dim_bottom_rows,
-            dim_splitter,
-        )
-    else:
-        result += sum_per_offset(
-            first_row_id + dim_splitter,
-            first_col_id,
-            dim_bottom_rows,
-            dim_splitter,
-        )
+    result += sum_split_squares(
+        first_row_id + dim_splitter,
+        first_col_id,
+        dim_bottom_rows,
+        dim_splitter,
+    )
 
     # top right, 2**k x 2**(c-k)
-    if dim_splitter > OFFSET_SIZE and dim_right_cols > OFFSET_SIZE:
-        result += sum_split_squares(
-            first_row_id,
-            first_col_id + dim_splitter,
-            dim_splitter,
-            dim_right_cols,
-        )
-    else:
-        result += sum_per_offset(
-            first_row_id,
-            first_col_id + dim_splitter,
-            dim_splitter,
-            dim_right_cols,
-        )
+    result += sum_split_squares(
+        first_row_id, first_col_id + dim_splitter, dim_splitter, dim_right_cols,
+    )
+
     if debug:
         print("end split", apply_mod(result))
     return apply_mod(result)

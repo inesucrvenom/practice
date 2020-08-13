@@ -58,8 +58,15 @@ full matrix of 8x8 looks like:
 If we have full square matrix of any dim = 2**k, with top left element of a
 then it's sum is:
 sum_full = {all a elements + sum of matrix when a == o }
-         = a * dim * dim + (dim / 2) * dim * (dim-1)
+         = a * dim * dim + (dim / 2) * dim * (0 + dim-1)
          = dim * dim * (a + (dim - 1)/2)
+         = { rows * one row}
+         = dim * ( dim/2 * (0 + dim-1) + a * dim )
+
+in case of loss, we have bunch of zeroes
+sum_with_zero   = {rows * one row} = rows * { (smallest + biggest) * n/2}
+                = dim * (0 + dim-1-loss) * (dim - loss)/2
+
 
 
 - every matrix split will looks like:
@@ -72,7 +79,7 @@ sum_full = {all a elements + sum of matrix when a == o }
 """
 
 # constant independent of values given during the execution
-OFFSET_SIZE = 8  # todo: see if bigger block makes sense, and which
+OFFSET_SIZE = 16  # todo: see if bigger block makes sense, and which
 # todo: check for 32, 64, 128
 
 # globals defined in the initalise function
@@ -222,56 +229,48 @@ def sum_square(first_row_id, first_col_id, dim):
     global global_previous
     if debug:
         print_debug([sum_square, first_row_id, first_col_id, dim, dim])
-
-    if debug:
         pretty_print(first_row_id, first_col_id, dim, dim)
-    smallest_el = apply_loss_mod(first_row_id ^ first_col_id)
-    right_neighbour_el = apply_loss_mod(first_row_id ^ (first_col_id + 1))
-    biggest_el = apply_loss_mod(first_row_id ^ (first_col_id + dim - 1))
+
+    # right_neighbour_el = apply_loss_mod(first_row_id ^ (first_col_id + 1))
+
+    potentially_smallest_el = first_row_id ^ first_col_id
+    potentially_biggest_el = first_row_id ^ (first_col_id + dim - 1)
+
+    if MODULO < (potentially_biggest_el - LOSS):
+        # hard to calculate how many zeroes, easier to just sum directly
+        sum_row = 0
+        for col in range(dim):
+            sum_row += apply_loss_mod(first_row_id ^ (first_col_id + col))
+        sum_mat = apply_mod(dim * sum_row)
+        global_previous[(biggest_el, dim)] = sum_mat
+        return sum_mat
+
+    smallest_el = apply_loss_mod(potentially_smallest_el)
+    biggest_el = apply_loss_mod(potentially_biggest_el)
+    row_num_el = biggest_el + 1 if biggest_el < dim else dim
 
     if smallest_el == 0 and biggest_el == 0:
-        if debug:
-            print("end mat0", 0)
         return 0
 
     # already have it
     check = global_previous.get((biggest_el, dim))
     if check is not None:
-        if debug:
-            print("end mat_have g_p", biggest_el, dim, " ==> ", check)
         return check
 
     # can use formula for matrix
-    if right_neighbour_el == smallest_el + 1:
-        tmp = apply_mod(dim * dim * (smallest_el + (dim - 1) / 2))
-        global_previous[(biggest_el, dim)] = tmp
-        if debug:
-            print("end mat sum formula", tmp)
-        return tmp
+    sum_row = (smallest_el + biggest_el) * (row_num_el) / 2
+    sum_mat = apply_mod(dim * sum_row)
+    global_previous[(biggest_el, dim)] = sum_mat
 
-    # the rest has to be summed directly, we don't know how many 0s are there
-    # but sum of the rows is the same for the each row
-    sum_row = 0
-    for col in range(dim):
-        sum_row += apply_loss_mod(first_row_id ^ (first_col_id + col))
-
-    tmp = apply_mod(apply_mod(sum_row) * dim)
-    global_previous[(biggest_el, dim)] = tmp
-
-    if debug:
-        print("end mat sum rows", tmp)
-    return tmp
-
+    return sum_mat
 
 def sum_per_offset(first_row_id, first_col_id, dim_rows, dim_cols):
     if debug:
         print_debug(
             ["---smallest---", first_row_id, first_col_id, dim_rows, dim_cols]
         )
-
-    ########
-    if debug:
         pretty_print(first_row_id, first_col_id, dim_rows, dim_cols)
+
     smallest_el = apply_mod(first_row_id ^ first_col_id)
     result_sum = 0
     for row in range(dim_rows):
@@ -292,4 +291,6 @@ def elder_age(cols, rows, loss, mod):
 
 # for debugging purposes
 if __name__ == "__main__":
-    print(elder_age(25, 34, 1, 100000), 776)
+    # print(elder_age(25, 34, 1, 100000), 776)
+    initialise(10, 1000)
+    print(sum_square(8, 0, 8), 120)

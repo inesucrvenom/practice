@@ -127,10 +127,10 @@ def test_elder_his(c, r, loss, modulo, expected):
 
 
 
-# @pytest.mark.timeout(1)  # expected crash
-# @pytest.mark.parametrize(
-#     "c, r, loss, modulo, expected", [
-#     (28827050410, 35165045587, 7109602, 13719506, 5456283),
-#     ])
-# def test_elder_might_take_long(c, r, loss, modulo, expected):
-#     assert elder_age(c, r, loss, modulo) == expected
+@pytest.mark.timeout(1)  # expected crash
+@pytest.mark.parametrize(
+    "c, r, loss, modulo, expected", [
+    (28827050410, 35165045587, 7109602, 13719506, 5456283),
+    ])
+def test_elder_tricky(c, r, loss, modulo, expected):
+    assert elder_age(c, r, loss, modulo) == expected

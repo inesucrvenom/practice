@@ -35,6 +35,8 @@ def show_matrix(mat):
 #### end of debug helpers
 
 """
+second approach, aiming for reusing 2**k * 2**k matrices as much as possible
+
 a^b == a XOR b (bitwise XOR) in the code
 2**k == pow(2,k) (math exponent 2^k could happen in the comments)
 

@@ -15,7 +15,7 @@ def slow_print(cols, rows, l, t):
                 print_item = "_" if item == 0 else "#"
                 line += '{:>1}'.format(print_item)
             else:
-                line += '{:>3}'.format(item)
+                line += '{:>3}'.format(item % t)
             if col % 8 == 7:
                 line += ' '
         line += ' = {}'.format(sum_line)
@@ -50,7 +50,7 @@ do_this = 1
 """ toggle switch """
 
 if do_this == 1 and __name__ == '__main__':
-    slow_print(25, 34, 1, 1000)
+    slow_print(35, 64, 0, 1000)
 
 # print pattern only
 if do_this == 3 and __name__ == '__main__':
